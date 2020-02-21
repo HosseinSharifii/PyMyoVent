@@ -1,0 +1,13 @@
+{
+  "base_parameters": {
+    "gravity": [9.8, "ms^2"],
+    "atmospheric": 101.4,
+    "dic":{
+      "dic1":1,
+      "dic2":2
+    }
+  },
+  "optional_parameters": {
+    "optional": 10
+  }
+}
