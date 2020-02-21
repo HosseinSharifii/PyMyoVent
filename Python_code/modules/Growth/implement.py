@@ -19,8 +19,6 @@ def return_lv_wall_thickness(self,time_step,cell_stress,total_stress_null,i):
     if self.tw <= self.min_tw:
         self.tw = self.min_tw
 
-
-
     return self.tw
 
 def return_number_of_hs(self,time_step,passive_stress,passive_stress_null,i):
