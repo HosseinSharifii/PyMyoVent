@@ -115,7 +115,7 @@ def display_simulation(data_structure, output_file_string="", t_limits=[],
     f = plt.figure(constrained_layout=True)
     if t_limits:
         time_span = t_limits[1]-t_limits[0]
-        plot_width = time_span*0.2
+        plot_width = 46
     else:
         plot_width=46
     f.set_size_inches([plot_width, 26])
@@ -390,13 +390,13 @@ def display_growth(data_structure, output_file_string="",signal="",
 
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)
-def return_n_hs(data_structure, output_file_string="",t_limits=[],dpi=None):
+def display_n_hs(data_structure, output_file_string="",signal="",t_limits=[],dpi=None):
     f = plt.figure(constrained_layout=True)
     no_of_rows = 3
     no_of_cols = 1
 
     f = plt.figure(constrained_layout=True)
-    f.set_size_inches([46, 8])
+    f.set_size_inches([15, 8])
     spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
                               figure=f)
     ax1 = f.add_subplot(spec2[0, 0])
@@ -405,20 +405,20 @@ def return_n_hs(data_structure, output_file_string="",t_limits=[],dpi=None):
         ax1.plot('time', 'pas_force_null', data=data_structure, label='Passive force null')
     if t_limits:
         ax1.set_xlim(t_limits)
-    ax1.set_ylabel('Passive force \n(N/m2)', fontsize = 20)
+    ax1.set_ylabel('Passive force \n(N/m2)', fontsize = 10)
     ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax1.tick_params(labelsize = 20)
-    ax1.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+    ax1.tick_params(labelsize = 10)
+    ax1.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
 
     ax2 = f.add_subplot(spec2[1, 0])
     ax2.plot('time','number_of_hs',data=data_structure,label='original')
     #ax2.plot('time','filtered_n_hs','r-',data=data_structure,label='filtered')
     if t_limits:
         ax2.set_xlim(t_limits)
-    ax2.set_ylabel('number of \n half_sarcomeres', fontsize = 20)
+    ax2.set_ylabel('number of \n half_sarcomeres', fontsize = 10)
     ax2.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax2.tick_params(labelsize = 20)
-    ax2.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+    ax2.tick_params(labelsize = 10)
+    ax2.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
 
     ax3 = f.add_subplot(spec2[2, 0])
     ax3.plot('time', 'hs_length', data=data_structure, label='hs length')
@@ -426,14 +426,73 @@ def return_n_hs(data_structure, output_file_string="",t_limits=[],dpi=None):
         #ax9.set_xlabel('time (s)', fontsize = 15)
     if t_limits:
         ax3.set_xlim(t_limits)
-    ax3.set_ylabel('cell length', fontsize = 20)
+    ax3.set_ylabel('cell length', fontsize = 10)
     ax3.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax3.tick_params(labelsize = 20)
-    ax3.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+    ax3.tick_params(labelsize = 10)
+    ax3.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)
 
 
+def display_active_force(data_structure, output_file_string="", t_limits=[],
+                       dpi=None):
+
+    no_of_rows = 4
+    no_of_cols = 1
+
+    f = plt.figure(constrained_layout=True)
+    if t_limits:
+        time_span = t_limits[1]-t_limits[0]
+        plot_width = 46
+    else:
+        plot_width=46
+    f.set_size_inches([plot_width, 10])
+    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
+                              figure=f)
+    ax6 = f.add_subplot(spec2[3, 0])
+    ax6.plot('time', 'hs_length', data=data_structure, label='hs_length')
+
+    if t_limits:
+        ax6.set_xlim(t_limits)
+    ax6.set_ylabel('Length', fontsize = 20)
+    ax6.tick_params(labelsize = 20)
+    ax6.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+
+    ax7 = f.add_subplot(spec2[2, 0])
+    #ax7.plot('time', 'hs_force', data=data_structure, label='Total force')
+    ax7.plot('time', 'cb_force', data=data_structure, label='Crossbridge force')
+    #ax7.plot('time', 'pas_force', data=data_structure, label='Passive force')
+    if t_limits:
+        ax7.set_xlim(t_limits)
+    ax7.set_ylabel('Force', fontsize = 20)
+    ax7.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+    ax7.tick_params(labelsize = 20)
+    ax7.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+
+    ax8 = f.add_subplot(spec2[0, 0])
+    ax8.plot('time', 'n_on', data=data_structure, label='N_on')
+    ax8.plot('time', 'n_off', data=data_structure, label='N_off')
+    ax8.plot('time', 'n_bound', data=data_structure, label='N_bound')
+    if t_limits:
+        ax8.set_xlim(t_limits)
+    ax8.set_ylim([0, 1.0])
+    ax8.set_ylabel('Thin filament', fontsize = 20)
+    ax8.tick_params(labelsize = 20)
+    ax8.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+
+    ax9 = f.add_subplot(spec2[1, 0])
+    ax9.plot('time', 'M_OFF', data=data_structure, label='M_OFF')
+    ax9.plot('time', 'M_ON', data=data_structure, label='M_ON')
+    ax9.plot('time', 'M_bound', data=data_structure, label='M_bound')
+    if t_limits:
+        ax9.set_xlim(t_limits)
+    ax9.set_ylim([0, 1.0])
+    ax9.set_ylabel('Thick filament', fontsize = 20)
+    ax9.tick_params(labelsize = 20)
+    ax9.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+
+    if (output_file_string):
+        save_figure_to_file(f, output_file_string, dpi)
 
 def save_figure_to_file(f, im_file_string, dpi=None, verbose=1):
     # Writes an image to file

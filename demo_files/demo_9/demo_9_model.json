@@ -8,13 +8,14 @@
     "flows_figure": ["..\\temp\\demo_9\\demo_9_flows.png"],
     "hs_fluxes_figure": ["..\\temp\\demo_9\\demo_9_hs_fluxes.png"],
     "growth_figure": ["..\\temp\\demo_9\\demo_9_growth.png"],
-    "hist": ["..\\temp\\demo_9\\demo_9_hist.png"]
+    "n_hs": ["..\\temp\\demo_9\\demo_9_nhs.png"],
+    "active": ["..\\temp\\demo_9\\demo_9_active.png"]
   },
 
   "baroreflex": {
     "baro_scheme": ["simple_baroreceptor"],
     "simulation":{
-      "no_of_time_points": [500000],
+      "no_of_time_points": [450000],
       "time_step": [0.001],
       "duty_ratio": [0.3],
       "basal_heart_period": [0.833,"s"],
@@ -64,8 +65,8 @@
         "increment": [0]
       },
       "venous":{
-        "start_index": [500000],
-        "stop_index": [505000],
+        "start_index": [300000],
+        "stop_index": [305000],
         "increment": [1.4e-5]
       }
     },

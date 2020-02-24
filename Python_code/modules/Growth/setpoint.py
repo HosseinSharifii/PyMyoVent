@@ -1,22 +1,32 @@
 import numpy as np
 import pandas as pd
 
-def return_setpoint(self,start_time_second,time_step,data):
-    window = 5000
+def growth_driver(self):
+    if self.growth["driven_signal"][0] == "stress":
+        self.passive_stress_null = 1.04*np.mean(self.hs.hs_data["pas_force"][:self.start_index+1])
+        self.gr_data['pas_force_null'] =\
+        pd.Series(np.full(self.data_buffer_size,self.passive_stress_null))
 
-#    setpoint_array = np.array(data[50000:].rolling(window=window).mean())
-#    setpoint=np.mean(setpoint_array[window:])
+        self.cb_stress_null = 1.1*np.mean(self.hs.hs_data["cb_force"][:self.start_index+1])
+        self.gr_data['cb_force_null'] = \
+        pd.Series(np.full(self.data_buffer_size,self.cb_stress_null))
+        print('***')
+        print('Growth module is activated!')
+        print('with passive force_null of ',self.passive_stress_null)
+        print('and active force_null of',self.cb_stress_null)
+        print('***')
 
-    max_data = data[50000:].max()
-    min_data = data[50000:].min()
-    setpoint = (max_data-min_data)/2+min_data
-    """i=int(start_time_second/time_step)
-    number_of_segments = 10
-    n=number_of_segments
-    interval_span_seconds=start_time_second/n
-    interval_span_index = int(interval_span_seconds/time_step)
-    setpoint_array= np.zeros(n)
-    for j in range(n):
-        setpoint_array[j]=np.mean(data[(i+(j-n)*interval_span_index):i])
-    setpoint = np.mean(setpoint_array)"""
-    return setpoint
+    if self.growth["driven_signal"][0] == "strain":
+        self.strain_null = np.mean(self.data["cell_strain"][:self.start_index+1])
+        self.data['cell_strain_null'] = \
+        pd.Series(np.full(self.output_buffer_size,self.cell_strain_null))
+        print('cell_strain_null',self.cell_strain_null)
+        self.wall_thickness = \
+        self.gr.return_lv_wall_thickness_strain(time_step,self.strain,self.cell_strain_null)
+        #eccentric
+        #new_number_of_hs = \
+        self.n_hs = \
+        self.gr.return_number_of_hs_strain(time_step,self.strain,
+        self.cell_strain_null)
+
+    #return setpoint

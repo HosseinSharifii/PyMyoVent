@@ -3,12 +3,14 @@ from math import *
 from scipy.integrate import solve_ivp
 import pandas as pd
 
-
+def update_growth(self,time_step):
+    self.wall_thickness = return_lv_wall_thickness(self,time_step)
+    self.number_of_hs = return_number_of_hs(self,time_step)
 # stress driven growth
-def return_lv_wall_thickness(self,time_step,cell_stress,total_stress_null,i):
-
-    f=cell_stress
-    f_null = total_stress_null
+def return_lv_wall_thickness(self,time_step):#,cb_stress,cb_stress_null,i):
+    f = self.hs.myof.cb_force
+    #f=cb_stress
+    f_null = self.cb_stress_null
     window = 5000
     tw_1 = self.tw
     dwdt_0 = self.G_tw*(f-f_null)*self.tw
@@ -21,13 +23,9 @@ def return_lv_wall_thickness(self,time_step,cell_stress,total_stress_null,i):
 
     return self.tw
 
-def return_number_of_hs(self,time_step,passive_stress,passive_stress_null,i):
-    p = passive_stress
-    p_null = passive_stress_null
-
-    """n_1 = self.n_of_hs
-    dndt = self.G_n_hs_0 * self.n_of_hs* (p - p_null)
-    n=dndt*time_step+n_1"""
+def return_number_of_hs(self,time_step):#,passive_stress,passive_stress_null,i):
+    p = self.hs.myof.pas_force
+    p_null = self.passive_stress_null
 
     window = 5000
     n_1 = self.n_of_hs
@@ -47,7 +45,7 @@ def return_number_of_hs(self,time_step,passive_stress,passive_stress_null,i):
 def return_lv_wall_thickness_strain(self,time_step,cell_strain,strain_null):
 
     s=cell_strain
-    s_null = strain_null
+    s_null = self.strain_null
 
     tw_1 = self.tw
     dwdt = self.G_tw*self.tw*(s-s_null)
@@ -84,9 +82,9 @@ def update_data_holder(self,time_step):
     self.data_buffer_index += 1
 
 #    self.gr_data.at[self.data_buffer_index, 'ventricle_wall_volume'] = self.ventricle_wall_volume
-    self.gr_data.at[self.data_buffer_index, 'ventricle_wall_thickness'] = self.tw
-    self.gr_data.at[self.data_buffer_index, 'number_of_hs'] = self.n_of_hs
-    self.gr_data.at[self.data_buffer_index, 'Gain_factor'] = self.G_n_hs
+    self.gr_data.at[self.data_buffer_index, 'ventricle_wall_thickness'] = self.wall_thickness
+    self.gr_data.at[self.data_buffer_index, 'number_of_hs'] = self.number_of_hs
+#    self.gr_data.at[self.data_buffer_index, 'Gain_factor'] = self.G_n_hs
 #    self.gr_data.at[self.data_buffer_index, 'growth_control'] = self.c
 
 

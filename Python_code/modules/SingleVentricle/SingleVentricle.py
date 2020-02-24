@@ -159,7 +159,7 @@ class single_circulation():
 
             initial_numbers_of_hs = self.n_hs
             self.gr = \
-            gr.growth(growth_params,initial_numbers_of_hs,self.output_buffer_size)
+            gr.growth(growth_params,initial_numbers_of_hs,self.output_buffer_size,self.hs)
 
             self.growth_activation_array[start_index:] = True
             self.growth_activation = self.growth_activation_array[0]
@@ -268,7 +268,7 @@ class single_circulation():
         # Run the simulation
         from .implement import implement_time_step, update_data_holders
         from .display import display_simulation, display_flows, display_pv_loop
-        from .display import display_baro_results,display_growth, display_force_length,return_n_hs
+        from .display import display_baro_results,display_growth, display_force_length,display_n_hs,display_active_force
 
         #baro_params = single_circulation_simulation.baroreflex
         # Set up some values for the simulation
@@ -310,8 +310,6 @@ class single_circulation():
                 self.resistance[-1] = self.resistance[-1] +\
                             self.ventricle_resistance_perturbation[i]
 
-
-
             # Apply growth activation
             self.growth_activation = self.growth_activation_array[i]
             # Apply heart rate activation
@@ -340,17 +338,6 @@ class single_circulation():
         self.data = pd.concat([self.data, self.hs.hs_data, self.syscon.sys_data],axis=1)
 
         if self.growth_activation:
-            #Apply moving average to growth outputs
-            """tw_data = self.gr.gr_data['ventricle_wall_thickness']
-            filtered_wall_thickness = \
-            tw_data.rolling(window=self.ma_window_index).mean()
-            n_hs_data = self.gr.gr_data['number_of_hs']
-            filtered_n_hs = \
-            n_hs_data.rolling(window=self.ma_window_index).mean()
-
-            self.gr.gr_data['filtered_wall_thickness'] = filtered_wall_thickness
-            self.gr.gr_data['filtered_n_hs'] = filtered_n_hs"""
-
             self.data =pd.concat([self.data,self.gr.gr_data],axis=1)
 
         #self.data = pd.concat([self.data, self.syscon.sys_data], axis)
@@ -358,10 +345,9 @@ class single_circulation():
 
         # Make plots
         # Circulation
-        index = self.data['heart_period'][100000]
 
         display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0])
+                           self.output_parameters["summary_figure"][0],[295,450])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
@@ -375,10 +361,13 @@ class single_circulation():
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
                                self.output_parameters["hs_fluxes_figure"][0])
+        display_active_force(self.data,self.output_parameters["active"][0],[295,450])                       
         #Growth
         if self.growth_activation:
             display_growth(self.data,
-            self.output_parameters["growth_figure"][0],self.driven_signal)#,[(100-index),100])
+            self.output_parameters["growth_figure"][0],self.driven_signal,[295,450])#,[(100-index),100])
+            display_n_hs(self.data,self.output_parameters["n_hs"][0],self.driven_signal,[300,350])
+
         if "data_file" in  self.output_parameters.values():
         #if not (self.output_parameters["data_file"]):
             # Write data to disk
