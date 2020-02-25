@@ -446,7 +446,7 @@ def display_active_force(data_structure, output_file_string="", t_limits=[],
         plot_width = 46
     else:
         plot_width=46
-    f.set_size_inches([plot_width, 10])
+    f.set_size_inches([plot_width, 20])
     spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
                               figure=f)
     ax6 = f.add_subplot(spec2[3, 0])

@@ -347,7 +347,7 @@ class single_circulation():
         # Circulation
 
         display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0],[295,450])
+                           self.output_parameters["summary_figure"][0])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
@@ -361,11 +361,11 @@ class single_circulation():
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
                                self.output_parameters["hs_fluxes_figure"][0])
-        display_active_force(self.data,self.output_parameters["active"][0],[295,450])                       
+        display_active_force(self.data,self.output_parameters["active"][0])
         #Growth
         if self.growth_activation:
             display_growth(self.data,
-            self.output_parameters["growth_figure"][0],self.driven_signal,[295,450])#,[(100-index),100])
+            self.output_parameters["growth_figure"][0],self.driven_signal)#,[(100-index),100])
             display_n_hs(self.data,self.output_parameters["n_hs"][0],self.driven_signal,[300,350])
 
         if "data_file" in  self.output_parameters.values():

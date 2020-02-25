@@ -13,7 +13,6 @@ class growth():
 
     def __init__(self,growth_params,initial_numbers_of_hs,data_buffer_size,hs_module):
 
-
         self.hs = hs_module
         self.growth = growth_params
         self.start_index = int(self.growth["start_index"][0])
@@ -28,12 +27,14 @@ class growth():
         internal_area = 2.0 * np.pi * np.power(internal_r, 2.0)
 
         initial_wall_thickness = 0.001 * self.ventricle_wall_volume /internal_area
+
         self.tw = initial_wall_thickness
+        self.tw_array = np.full(self.start_index,self.tw)
         self.tw_rate = np.zeros(self.start_index)
         self.min_tw = 0.8*self.tw
-        self.tw_counter_memory = 100
-        self.tw_counter = self.tw_counter_memory
-        self.tw_rate_control =[]
+        #self.tw_counter_memory = 100
+        #self.tw_counter = self.tw_counter_memory
+        #self.tw_rate_control =[]
 
         if self.growth["driven_signal"][0] == "stress":
             self.G_tw = float(self.growth["stress_signal"]["concenrtric_growth"]["G_wall_thickness"][0])
@@ -41,26 +42,19 @@ class growth():
         if self.growth["driven_signal"][0] == "strain":
             self.G_tw = float(self.growth["strain_signal"]["concenrtric_growth"]["Gs_wall_thickness"][0])
 
-
         #Eccentric self.growth (number of hs in sereis)
         self.n_of_hs = initial_numbers_of_hs
+        self.n_of_hs_array = np.full(self.start_index,self.n_of_hs)
         self.n_hs_rate =  np.zeros(self.start_index)
-        self.n_hs_counter_memory = 100
-        self.n_hs_counter = self.n_hs_counter_memory
-        self.n_hs_rate_control = []
+        #self.n_hs_counter_memory = 100
+        #self.n_hs_counter = self.n_hs_counter_memory
+        #self.n_hs_rate_control = []
         self.max_n_hs = 1.5*initial_numbers_of_hs
         self.min_n_hs = 0.8*initial_numbers_of_hs
         if self.growth["driven_signal"][0] == "stress":
             self.G_n_hs = float(self.growth["stress_signal"]["eccentric_growth"]["G_number_of_hs"][0])
         if self.growth["driven_signal"][0] == "strain":
             self.G_n_hs = float(self.growth["strain_signal"]["eccentric_growth"]["Gs_number_of_hs"][0])
-
-        #gain factor control
-        self.v_set = 0.4
-        self.v_slope = 0.03
-        self.l_set = 1400
-        self.l_slope = 30
-        self.G_n_hs_0 = self.G_n_hs
 
         #data
         self.data_buffer_size = data_buffer_size

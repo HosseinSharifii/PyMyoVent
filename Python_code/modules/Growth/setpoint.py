@@ -3,11 +3,11 @@ import pandas as pd
 
 def growth_driver(self):
     if self.growth["driven_signal"][0] == "stress":
-        self.passive_stress_null = 1.04*np.mean(self.hs.hs_data["pas_force"][:self.start_index+1])
+        self.passive_stress_null = 1.06*np.mean(self.hs.hs_data["pas_force"][:self.start_index+1])
         self.gr_data['pas_force_null'] =\
         pd.Series(np.full(self.data_buffer_size,self.passive_stress_null))
 
-        self.cb_stress_null = 1.1*np.mean(self.hs.hs_data["cb_force"][:self.start_index+1])
+        self.cb_stress_null = 1.105*np.mean(self.hs.hs_data["cb_force"][:self.start_index+1])
         self.gr_data['cb_force_null'] = \
         pd.Series(np.full(self.data_buffer_size,self.cb_stress_null))
         print('***')

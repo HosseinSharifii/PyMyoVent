@@ -11,7 +11,19 @@ def return_lv_wall_thickness(self,time_step):#,cb_stress,cb_stress_null,i):
     f = self.hs.myof.cb_force
     #f=cb_stress
     f_null = self.cb_stress_null
-    window = 5000
+
+    """tw_1 = self.tw
+    dwdt=self.G_tw*(f-f_null)*self.tw
+    tw = dwdt*time_step+tw_1"""
+
+    window = 7000
+
+    """tw_1 = self.tw
+    dwdt= self.G_tw*(f-f_null)*self.tw
+    tw = dwdt*time_step+tw_1
+    self.tw_array = np.append(self.tw_array,tw)
+    self.tw = np.mean(self.tw_array[-window:])"""
+
     tw_1 = self.tw
     dwdt_0 = self.G_tw*(f-f_null)*self.tw
     self.tw_rate = np.append(self.tw_rate,dwdt_0)
@@ -27,9 +39,20 @@ def return_number_of_hs(self,time_step):#,passive_stress,passive_stress_null,i):
     p = self.hs.myof.pas_force
     p_null = self.passive_stress_null
 
-    window = 5000
+    """n_1 = self.n_of_hs
+    dndt = self.G_n_hs_0 * self.n_of_hs* (p - p_null)
+    n=dndt*time_step+n_1"""
+
+    window = 7000
+
+    """n_1 = self.n_of_hs
+    dndt = self.G_n_hs * self.n_of_hs* (p - p_null)
+    n=dndt*time_step+n_1
+    self.n_of_hs_array = np.append(self.n_of_hs_array,n)
+    self.n_of_hs = np.mean(self.n_of_hs_array[-window:])"""
+
     n_1 = self.n_of_hs
-    dndt_0 = self.G_n_hs_0 * self.n_of_hs* (p - p_null)
+    dndt_0 = self.G_n_hs * self.n_of_hs* (p - p_null)
     self.n_hs_rate = np.append(self.n_hs_rate,dndt_0)
     dndt = np.mean(self.n_hs_rate[-window:])
     n=dndt*time_step+n_1

@@ -15,7 +15,7 @@
   "baroreflex": {
     "baro_scheme": ["simple_baroreceptor"],
     "simulation":{
-      "no_of_time_points": [450000],
+      "no_of_time_points": [300000],
       "time_step": [0.001],
       "duty_ratio": [0.3],
       "basal_heart_period": [0.833,"s"],
@@ -65,8 +65,8 @@
         "increment": [0]
       },
       "venous":{
-        "start_index": [300000],
-        "stop_index": [305000],
+        "start_index": [500000],
+        "stop_index": [505000],
         "increment": [1.4e-5]
       }
     },
