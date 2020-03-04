@@ -16,7 +16,7 @@ def growth_driver(self):
         print('and active force_null of',self.cb_stress_null)
         print('***')
 
-    if self.growth["driven_signal"][0] == "strain":
+    """if self.growth["driven_signal"][0] == "strain":
         self.strain_null = np.mean(self.data["cell_strain"][:self.start_index+1])
         self.data['cell_strain_null'] = \
         pd.Series(np.full(self.output_buffer_size,self.cell_strain_null))
@@ -27,6 +27,6 @@ def growth_driver(self):
         #new_number_of_hs = \
         self.n_hs = \
         self.gr.return_number_of_hs_strain(time_step,self.strain,
-        self.cell_strain_null)
+        self.cell_strain_null)"""
 
     #return setpoint

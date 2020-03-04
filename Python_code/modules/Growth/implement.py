@@ -4,25 +4,17 @@ from scipy.integrate import solve_ivp
 import pandas as pd
 
 def update_growth(self,time_step):
-    self.wall_thickness = return_lv_wall_thickness(self,time_step)
-    self.number_of_hs = return_number_of_hs(self,time_step)
+    if self.growth["driven_signal"][0] == "stress":
+        self.wall_thickness = return_lv_wall_thickness(self,time_step)
+        self.number_of_hs = return_number_of_hs(self,time_step)
+    if self.growth["driven_signal"][0] == "strain":
+        self.wall_thickness = return_lv_wall_thickness_strain(self,time_step)
+        self.number_of_hs = return_number_of_hs_strain(self,time_step)
 # stress driven growth
 def return_lv_wall_thickness(self,time_step):#,cb_stress,cb_stress_null,i):
     f = self.hs.myof.cb_force
-    #f=cb_stress
     f_null = self.cb_stress_null
-
-    """tw_1 = self.tw
-    dwdt=self.G_tw*(f-f_null)*self.tw
-    tw = dwdt*time_step+tw_1"""
-
-    window = 7000
-
-    """tw_1 = self.tw
-    dwdt= self.G_tw*(f-f_null)*self.tw
-    tw = dwdt*time_step+tw_1
-    self.tw_array = np.append(self.tw_array,tw)
-    self.tw = np.mean(self.tw_array[-window:])"""
+    window = self.ma_window
 
     tw_1 = self.tw
     dwdt_0 = self.G_tw*(f-f_null)*self.tw
@@ -30,6 +22,7 @@ def return_lv_wall_thickness(self,time_step):#,cb_stress,cb_stress_null,i):
     dwdt=np.mean(self.tw_rate[-window:])
     tw = dwdt*time_step+tw_1
     self.tw = tw
+
     if self.tw <= self.min_tw:
         self.tw = self.min_tw
 
@@ -38,18 +31,7 @@ def return_lv_wall_thickness(self,time_step):#,cb_stress,cb_stress_null,i):
 def return_number_of_hs(self,time_step):#,passive_stress,passive_stress_null,i):
     p = self.hs.myof.pas_force
     p_null = self.passive_stress_null
-
-    """n_1 = self.n_of_hs
-    dndt = self.G_n_hs_0 * self.n_of_hs* (p - p_null)
-    n=dndt*time_step+n_1"""
-
-    window = 7000
-
-    """n_1 = self.n_of_hs
-    dndt = self.G_n_hs * self.n_of_hs* (p - p_null)
-    n=dndt*time_step+n_1
-    self.n_of_hs_array = np.append(self.n_of_hs_array,n)
-    self.n_of_hs = np.mean(self.n_of_hs_array[-window:])"""
+    window = self.ma_window
 
     n_1 = self.n_of_hs
     dndt_0 = self.G_n_hs * self.n_of_hs* (p - p_null)
@@ -57,10 +39,11 @@ def return_number_of_hs(self,time_step):#,passive_stress,passive_stress_null,i):
     dndt = np.mean(self.n_hs_rate[-window:])
     n=dndt*time_step+n_1
     self.n_of_hs = n
+
     if self.n_of_hs<=self.min_n_hs:
         print('too less')
     if self.n_of_hs>=self.max_n_hs:
-        print('lv vol',lv_volume)
+        #print('lv vol',lv_volume)
         print('n_hs',self.n_of_hs)
 
     return self.n_of_hs

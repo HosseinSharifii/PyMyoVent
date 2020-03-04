@@ -91,6 +91,9 @@ class single_circulation():
             self.pert = pert.perturbation(pert_params,self.output_buffer_size)
             self.volume_perturbation = self.pert.volume_perturbation
 
+            self.aortic_valve_perturbation =\
+            self.pert.aortic_valve_perturbation
+
             self.aorta_compliance_perturbation = \
             self.pert.aorta_compliance_perturbation
 
@@ -143,11 +146,10 @@ class single_circulation():
             from modules.Growth import growth as gr
             growth_params = single_circulation_simulation["growth"]
 
-
             start_index = int(growth_params["start_index"][0])
 
-            ma_window_second =  int(growth_params["moving_average_window"][0])
-            self.ma_window_index = int(ma_window_second/self.dt)
+#            ma_window_second =  int(growth_params["moving_average_window"][0])
+#            self.ma_window_index = int(ma_window_second/self.dt)
 
             self.driven_signal = growth_params["driven_signal"][0]
 
@@ -268,7 +270,9 @@ class single_circulation():
         # Run the simulation
         from .implement import implement_time_step, update_data_holders
         from .display import display_simulation, display_flows, display_pv_loop
-        from .display import display_baro_results,display_growth, display_force_length,display_n_hs,display_active_force
+        from .display import display_baro_results,display_growth
+        from .display import display_force_length,display_n_hs,display_active_force
+        from .display import display_circulatory
 
         #baro_params = single_circulation_simulation.baroreflex
         # Set up some values for the simulation
@@ -293,6 +297,9 @@ class single_circulation():
             if self.pert_activation:
                 # Apply volume perturbation to veins
                 self.v[-2] = self.v[-2] + self.volume_perturbation[i]
+                # Apply valve perturbation
+                self.aortic_valve_perturbation_factor = \
+                self.aortic_valve_perturbation[i]
                 # Apply perturbation to compliances
                 self.compliance[0]=self.compliance[0]+\
                             self.aorta_compliance_perturbation[i]
@@ -347,7 +354,7 @@ class single_circulation():
         # Circulation
 
         display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0])
+                           self.output_parameters["summary_figure"][0])#,[295,350])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
@@ -361,11 +368,12 @@ class single_circulation():
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
                                self.output_parameters["hs_fluxes_figure"][0])
-        display_active_force(self.data,self.output_parameters["active"][0])
+        display_active_force(self.data,self.output_parameters["active"][0])#,[295,350])
+        display_circulatory(self.data,self.output_parameters["circulatory"][0])#,[295,350])
         #Growth
         if self.growth_activation:
             display_growth(self.data,
-            self.output_parameters["growth_figure"][0],self.driven_signal)#,[(100-index),100])
+            self.output_parameters["growth_figure"][0],self.driven_signal)#,[295,350])#,[(100-index),100])
             display_n_hs(self.data,self.output_parameters["n_hs"][0],self.driven_signal,[300,350])
 
         if "data_file" in  self.output_parameters.values():

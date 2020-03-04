@@ -75,7 +75,7 @@ class half_sarcomere():
             self.hs_data['J4'] = pd.Series(np.zeros(self.data_buffer_size))
             self.hs_data['Jon'] = pd.Series(np.zeros(self.data_buffer_size))
             self.hs_data['Joff'] = pd.Series(np.zeros(self.data_buffer_size))
-
+            self.hs_data['N_overlap'] = pd.Series(np.full(self.data_buffer_size,self.myof.n_overlap))
         if (self.membr.kinetic_scheme == "Ten_Tusscher_2004"):
             self.hs_data['membrane_voltage'] = pd.Series(np.zeros(self.data_buffer_size))
 

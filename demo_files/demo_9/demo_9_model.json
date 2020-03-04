@@ -9,13 +9,14 @@
     "hs_fluxes_figure": ["..\\temp\\demo_9\\demo_9_hs_fluxes.png"],
     "growth_figure": ["..\\temp\\demo_9\\demo_9_growth.png"],
     "n_hs": ["..\\temp\\demo_9\\demo_9_nhs.png"],
-    "active": ["..\\temp\\demo_9\\demo_9_active.png"]
+    "active": ["..\\temp\\demo_9\\demo_9_active.png"],
+    "circulatory": ["..\\temp\\demo_9\\demo_9_circulatory.png"]
   },
 
   "baroreflex": {
     "baro_scheme": ["simple_baroreceptor"],
     "simulation":{
-      "no_of_time_points": [300000],
+      "no_of_time_points": [500000],
       "time_step": [0.001],
       "duty_ratio": [0.3],
       "basal_heart_period": [0.833,"s"],
@@ -53,6 +54,13 @@
       "stop_index": [310000],
       "increment": [0]
     },
+    "valve":{
+      "aortic":{
+        "start_index": [200000],
+        "stop_index": [505000],
+        "increment": [0]
+      }
+    },
     "compliance": {
       "aorta":{
         "start_index": [200000],
@@ -67,14 +75,14 @@
       "venous":{
         "start_index": [500000],
         "stop_index": [505000],
-        "increment": [1.4e-5]
+        "increment": [-1.4e-5]
       }
     },
     "resistance": {
       "aorta":{
-        "start_index": [500000],
-        "stop_index": [505000],
-        "increment": [3.6e-3]
+        "start_index": [200000],
+        "stop_index": [205000],
+        "increment": [0.016]
       },
       "capillaries": {
         "start_index": [500000],
@@ -167,7 +175,7 @@
   },
   "growth": {
     "start_index": [100000],
-    "moving_average_window": [5,"seconds"],
+    "moving_average_window": [5000],
     "ventricle_wall_volume": [0.03,"liters"],
     "ventricle_slack_volume": [0.08, "liters"],
     "driven_signal": ["stress"],

@@ -9,6 +9,8 @@ class perturbation():
         pert = pert_params
         #volume perturbation
         self.volume_perturbation = np.zeros(data_buffer_size+1)
+        #aortic valve
+        self.aortic_valve_perturbation = np.zeros(data_buffer_size+1)
         #aortic compliance perturbation
         self.aorta_compliance_perturbation=\
         np.zeros(data_buffer_size+1)
@@ -38,6 +40,13 @@ class perturbation():
         stop_index = int(temp_vol["stop_index"][0])
         increment = float(temp_vol["increment"][0])
         self.volume_perturbation[(start_index+1):(stop_index+1)] = increment
+        #valve
+        temp_valve=pert["valve"]
+        temp_avlve = temp_valve["aortic"]
+        start_index = int(temp_avlve["start_index"][0])
+        stop_index = int(temp_avlve["stop_index"][0])
+        increment = float(temp_avlve["increment"][0])
+        self.aortic_valve_perturbation[(start_index+1):(stop_index+1)] = increment
         #compliance
         temp_c = pert["compliance"]
 

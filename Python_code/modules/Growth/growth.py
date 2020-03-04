@@ -16,6 +16,7 @@ class growth():
         self.hs = hs_module
         self.growth = growth_params
         self.start_index = int(self.growth["start_index"][0])
+        self.ma_window = int(growth_params["moving_average_window"][0])
 
         self.ventricle_wall_volume = float(self.growth["ventricle_wall_volume"][0])
 

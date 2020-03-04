@@ -24,7 +24,8 @@ def implement_time_step(self, time_step, activation,i):
     if self.growth_activation_array[-1]:
         self.ventricle_wall_volume = return_wall_volume(self, self.v[-1])
     new_hs_length = 10e9*new_lv_circumference / self.n_hs
-    self.strain = (new_hs_length - self.slack_hsl)/self.slack_hsl
+    if self.driven_signal == "strain":
+        self.strain = (new_hs_length - self.slack_hsl)/self.slack_hsl
     delta_hsl = new_hs_length - self.hs.hs_length
     # Implements the length change on the half-sarcomere
     self.hs.update_simulation(0.0, delta_hsl, 0.0, 1)
@@ -90,10 +91,14 @@ def update_data_holders(self, time_step, activation):
         self.volume_perturbation[self.data_buffer_index]
 #    self.data.at[self.data_buffer_index, 'ventricle_wall_thickness'] =\
 #            self.wall_thickness
-    self.data.at[self.data_buffer_index, 'cell_strain'] = self.strain
+
     if self.growth_activation_array[-1]:
+
         self.data.at[self.data_buffer_index, 'ventricle_wall_volume'] =\
             self.ventricle_wall_volume
+        if self.driven_signal == "strain":
+            self.data.at[self.data_buffer_index, 'cell_strain'] = self.strain
+
 #        if self.driven_signal == "strain":
 #            self.data.at[self.data_buffer_index, 'cell_strain'] = self.strain
 
@@ -138,7 +143,11 @@ def return_flows(self, v):
 
     flows = dict()
 
-    flows['ventricle_to_aorta'] = 0.0
+
+    # Apply aortic valve perturbation
+    flows['ventricle_to_aorta'] = \
+    self.aortic_valve_perturbation_factor*(p[-1] - p[0]) / self.resistance[0]
+
     if (p[-1] > p[0]):
         flows['ventricle_to_aorta'] = \
             (p[-1] - p[0]) / self.resistance[0]
