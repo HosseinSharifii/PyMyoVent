@@ -30,7 +30,7 @@
     },
     "simple_baroreceptor":{
       "simulation":{
-        "no_of_time_points": [750000],
+        "no_of_time_points": [300000],
         "time_step": [0.001],
         "duty_ratio": [0.005],
         "basal_heart_period": [0.9,"s"]
@@ -38,7 +38,7 @@
       "afferent": {
         "bc_max": [2],
         "bc_min": [0],
-        "slope": [25,"mmHg"],
+        "slope": [15,"mmHg"],
         "P_n": [90,"mmHg"]
       },
       "regulation":{
@@ -98,8 +98,8 @@
     },
     "resistance": {
       "aorta":{
-        "start_index": [300000],
-        "stop_index": [310000],
+        "start_index": [150000],
+        "stop_index": [170000],
         "increment": [0.01912]
       },
       "capillaries": {

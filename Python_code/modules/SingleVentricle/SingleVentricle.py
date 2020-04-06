@@ -175,6 +175,7 @@ class single_circulation():
             #self.growth_switch = True
 
         # Baro
+        #self.baro_activation = self.baro_params["baro_activation"][0]
         self.syscon=syscon.system_control(self.baro_params,hs_params,
                                     self.output_buffer_size)
 
@@ -200,6 +201,15 @@ class single_circulation():
         #Valve leakages
         self.vl = np.zeros(2)
 
+        # saving data
+        self.saving_data_activation = False
+        self.saving_data_activation =  \
+            single_circulation_simulation["saving_to_spreadsheet"]["saving_data_activation"][0]
+        if self.saving_data_activation:
+            self.save_data_start_index = \
+                single_circulation_simulation["saving_to_spreadsheet"]["start_index"][0]
+            self.save_data_stop_index= \
+                single_circulation_simulation["saving_to_spreadsheet"]["stop_index"][0]
         # Create a pandas data structure to store data
         self.sim_time = 0.0
         self.data_buffer_index = 0
@@ -274,8 +284,6 @@ class single_circulation():
 
         self.prof_activation = \
             single_circulation_simulation["profiling"]["profiling_activation"][0]
-        self.saving_data_activation =  \
-            single_circulation_simulation["saving_to_spreadsheet"]["saving_data_activation"][0]
 
     def run_simulation(self):
         # Run the simulation
@@ -365,7 +373,7 @@ class single_circulation():
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
                         self.output_parameters["pv_figure"][0])
-        if(hasattr(self.data,'heart_period')):
+        if self.baro_scheme !="fixed_heart_rate":
             display_baro_results(self.data,
                             self.output_parameters["baro_figure"][0])
 
@@ -391,11 +399,8 @@ class single_circulation():
         if self.saving_data_activation:
             print("Data is saving to an excel spread sheet!")
 
-            start_index = \
-                single_circulation_simulation["saving_to_spreadsheet"]["start_index"][0]
-            stop_index = \
-                single_circulation_simulation["saving_to_spreadsheet"]["stop_index"][0]
-            data_to_be_saved = self.data.loc[start_index:stop_index,:]
+            data_to_be_saved = \
+                self.data.loc[self.save_data_start_index:self.save_data_stop_index,:]
 
             append_df_to_excel(self.output_parameters['excel_file'][0],data_to_be_saved,
                            sheet_name='Data',startrow=0)

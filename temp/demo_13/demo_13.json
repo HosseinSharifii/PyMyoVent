@@ -39,7 +39,7 @@
         "bc_max": [2],
         "bc_min": [0],
         "slope": [15,"mmHg"],
-        "P_n": [90,"mmHg"]
+        "P_n": [100,"mmHg"]
       },
       "regulation":{
         "heart_period":{
@@ -61,7 +61,7 @@
     }
   },
   "perturbations": {
-    "perturbation_activation":[false],
+    "perturbation_activation":[true],
     "volume":{
       "start_index": [300000],
       "stop_index": [310000],
@@ -98,9 +98,9 @@
     },
     "resistance": {
       "aorta":{
-        "start_index": [300000],
-        "stop_index": [310000],
-        "increment": [0.01912]
+        "start_index": [150000],
+        "stop_index": [170000],
+        "increment": [0.00956]
       },
       "capillaries": {
         "start_index": [500000],
@@ -206,12 +206,12 @@
 },
   "growth": {
     "growth_activation": [true],
-    "start_index": [100000],
+    "start_index": [50000],
     "moving_average_window": [5000],
     "driven_signal": ["stress"],
     "stress_signal":{
       "concenrtric_growth": {
-        "G_wall_thickness": [5e-7]
+        "G_wall_thickness": [1e-6]
       },
       "eccentric_growth": {
         "G_number_of_hs": [-1e-6]

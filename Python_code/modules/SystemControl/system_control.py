@@ -168,21 +168,32 @@ class system_control():
             self.delta_Tv = 0.0
 
             # data
-        if (self.baro_scheme !="fixed_heart_rate"):
-            self.data_buffer_size = data_buffer_size
-            self.sys_time = 0.0
-            self.data_buffer_index = 0
-            self.sys_data = pd.DataFrame({'heart_period':
-                                                np.zeros(self.data_buffer_size),
-                                                'T_prime':
-                                                np.zeros(self.data_buffer_size),
-                                                'k_1':
-                                                np.zeros(self.data_buffer_size),
-                                                'k_3':
-                                                np.zeros(self.data_buffer_size)})
+        self.data_buffer_size = data_buffer_size
+        self.sys_time = 0.0
+        self.data_buffer_index = 0
+        self.sys_data = pd.DataFrame({'heart_period':
+                                            np.zeros(self.data_buffer_size)})
+        self.sys_data.at[0, 'heart_period'] = self.T
+        self.sys_data.at[0, 'heart_rate'] = 60/self.T
 
-            self.sys_data.at[0, 'heart_period'] = self.T
-            self.sys_data.at[0, 'heart_rate'] = 60/self.T
+        if (self.baro_scheme !="fixed_heart_rate"):
+#            self.data_buffer_size = data_buffer_size
+#            self.sys_time = 0.0
+#            self.data_buffer_index = 0
+#           self.sys_data = pd.DataFrame({'heart_period':
+#                                                np.zeros(self.data_buffer_size),
+#                                                'T_prime':
+#                                                np.zeros(self.data_buffer_size),
+#                                                'k_1':
+#                                                np.zeros(self.data_buffer_size),
+#                                                'k_3':
+#                                                np.zeros(self.data_buffer_size)})
+            self.sys_data['T_prime'] = pd.Series(np.zeros(self.data_buffer_size))
+            self.sys_data['k_1'] = pd.Series(np.zeros(self.data_buffer_size))
+            self.sys_data['k_3'] = pd.Series(np.zeros(self.data_buffer_size))
+
+#            self.sys_data.at[0, 'heart_period'] = self.T
+#            self.sys_data.at[0, 'heart_rate'] = 60/self.T
             self.sys_data.at[0, 'T_prime'] = self.T
             self.sys_data.at[0, 'k_1'] = self.k1
             self.sys_data.at[0, 'k_3'] = self.k3

@@ -29,7 +29,7 @@
     },
     "simple_baroreceptor":{
       "simulation":{
-        "no_of_time_points": [500000],
+        "no_of_time_points": [10000],
         "time_step": [0.001],
         "duty_ratio": [0.3],
         "basal_heart_period": [0.9,"s"]
@@ -204,7 +204,7 @@
   }
 },
   "growth": {
-    "growth_activation": [true],
+    "growth_activation": [false],
     "start_index": [100000],
     "moving_average_window": [5000],
     "driven_signal": ["stress"],
@@ -221,9 +221,9 @@
     "profiling_activation":[false]
   },
   "saving_to_spreadsheet":{
-    "saving_data_activation":[false],
-    "start_index":[],
-    "stop_index":[]
+    "saving_data_activation":[true],
+    "start_index":[0],
+    "stop_index":[10000]
   },
   "multi_threads" :{
     "multithreading_activation":[false],
