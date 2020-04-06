@@ -9,7 +9,6 @@
     "flows_figure": ["..//temp//demo_11//demo_11_flows.png"],
     "hs_fluxes_figure": ["..//temp//demo_11//demo_11_hs_fluxes.png"],
     "growth_figure": ["..//temp//demo_11//demo_11_growth.png"],
-    "growth_summary": ["..//temp//demo_11//demo_11_growth_sum.png"],
     "sys_fig": ["..//temp//demo_11//demo_11_sys.png"],
     "regurg_fig": ["..//temp//demo_11//demo_11_regurg.png"],
     "active": ["..//temp//demo_11//demo_11_active.png"],
