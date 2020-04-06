@@ -58,6 +58,11 @@ def display_baro_results (data_structure, output_file_string="",dpi=None):
         ax4.set_xlabel('time (s)', fontsize = 15)
         ax4.set_ylabel('f_cs', fontsize = 15)
 
+    ax4 = f.add_subplot(spec2[3, 0])
+    ax4.plot('time','heart_rate',data=data_structure)
+    ax4.set_xlabel('time (s)', fontsize = 15)
+    ax4.set_ylabel('heart_rate', fontsize = 15)
+
     ax5 = f.add_subplot(spec2[4, 0])
     ax5.plot('time','heart_period',data=data_structure)
     ax5.set_xlabel('time (s)', fontsize = 15)
@@ -221,7 +226,8 @@ def display_simulation(data_structure, output_file_string="", t_limits=[],
 
     ax10 = f.add_subplot(spec2[9, 0])
     ax10.plot('time', 'volume_ventricle', data=data_structure, label='Ventricle')
-
+    ax10.plot('time','LVEDV','r-',data=data_structure, label="EDV")
+    ax10.plot('time','LVESV','r-',data=data_structure, label="ESV")
     if t_limits:
         ax10.set_xlim(t_limits)
     ax10.set_ylabel('Volume', fontsize = 20)
@@ -230,33 +236,52 @@ def display_simulation(data_structure, output_file_string="", t_limits=[],
 
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)
-def display_force_length(data_structure, output_file_string="", t_limits=[],dpi=None):
 
-    no_of_rows = 2
+def display_growth(data_structure, output_file_string="",signal="",
+                    t_limits=[],dpi=None):
+
+    no_of_rows = 4
     no_of_cols = 1
-    f = plt.figure(constrained_layout=True)
-    f.set_size_inches([10, 10])
-    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
-                              figure=f)
-    ax1 = f.add_subplot(spec2[0, 0])
-    ax1.plot('hs_length','pas_force',data=data_structure)
-    #ax1.set_xlabel('time (s)', fontsize = 15)
-    ax1.set_ylabel('cell force \n(N/m2)', fontsize = 15)
-    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax1.tick_params(labelsize = 20)
-    ax1.legend(bbox_to_anchor=(1.05, 1))
 
-    ax2 = f.add_subplot(spec2[1, 0])
-    ax2.plot('hs_length','cb_force',data=data_structure)
-    #ax1.set_xlabel('time (s)', fontsize = 15)
-    ax2.set_ylabel('cell force \n(N/m2)', fontsize = 15)
+    f = plt.figure(constrained_layout=True)
+    f.set_size_inches([7, 5])
+    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,figure=f)
+
+    ax0 = f.add_subplot(spec2[0, 0])
+    ax0.plot('time','ventricle_wall_thickness',data=data_structure)
+    if t_limits:
+        ax0.set_xlim(t_limits)
+    ax0.set_ylabel('LVW_t(mm)')#, fontsize = 10)
+    ax0.tick_params(labelsize = 10)
+
+
+    ax1 = f.add_subplot(spec2[1, 0])
+    ax1.plot('time','ventricle_wall_volume',data=data_structure)
+    if t_limits:
+        ax1.set_xlim(t_limits)
+    ax1.set_ylabel('LVW vol(ml)')#, fontsize = 10)
+    ax1.tick_params(labelsize = 10)
+
+    ax2 = f.add_subplot(spec2[2, 0])
+    ax2.plot('time','number_of_hs',data=data_structure)
+    if t_limits:
+        ax2.set_xlim(t_limits)
+    ax2.set_ylabel('NHS')#, fontsize = 10)
     ax2.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax2.tick_params(labelsize = 20)
-    ax2.legend(bbox_to_anchor=(1.05, 1))
+    ax2.tick_params(labelsize = 10)
+
+    ax3 = f.add_subplot(spec2[3, 0])
+    ax3.plot('time','volume_ventricle',data=data_structure)
+    if t_limits:
+        ax3.set_xlim(t_limits)
+    ax3.set_ylabel('LV vol(ml)')#, fontsize = 10)
+    ax3.set_xlabel('time (s)')#, fontsize = 10)
+    ax3.tick_params(labelsize = 10)
 
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)
-def display_growth(data_structure, output_file_string="",signal="",
+
+def display_growth_summary(data_structure, output_file_string="",signal="",
                     t_limits=[],dpi=None):
 
     no_of_rows = 10
@@ -286,11 +311,13 @@ def display_growth(data_structure, output_file_string="",signal="",
     if(hasattr(data_structure,'heart_period')):
 
         ax2 = f.add_subplot(spec2[1, 0])
-        ax2.plot('time','heart_period',data=data_structure)
+        #ax2.plot('time','heart_period',data=data_structure)
+        ax2.plot('time','heart_rate',data=data_structure)
         if t_limits:
             ax2.set_xlim(t_limits)
         #ax2.set_xlabel('time (s)', fontsize = 20)
-        ax2.set_ylabel('heart period', fontsize = 20)
+        #ax2.set_ylabel('heart period', fontsize = 20)
+        ax2.set_ylabel('heart rate', fontsize = 20)
         ax2.tick_params(labelsize = 25)
 
     ax3 = f.add_subplot(spec2[2, 0])
@@ -389,6 +416,8 @@ def display_growth(data_structure, output_file_string="",signal="",
 
     ax10 = f.add_subplot(spec2[9, 0])
     ax10.plot('time','volume_ventricle',data=data_structure)
+    ax10.plot('time','LVEDV',data=data_structure)
+    ax10.plot('time','LVESV',data=data_structure)
     if t_limits:
         ax10.set_xlim(t_limits)
     ax10.set_xlabel('time (s)', fontsize = 20)
@@ -398,210 +427,10 @@ def display_growth(data_structure, output_file_string="",signal="",
 
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)
-def display_growth1(data_structure, output_file_string="",signal="",
-                    t_limits=[],dpi=None):
-
-    no_of_rows = 10
-    no_of_cols = 1
-
-    f = plt.figure(constrained_layout=True)
-    f.set_size_inches([46, 28])
-    #spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,figure=f)
-    gs=gridspec.GridSpec(4,1,figure=f,height_ratios=[2,1,3,4])
-#    ax1 = f.add_subplot(spec2[0, 0])
-#    ax1.plot('time','activation',data=data_structure)
-#    ax1.set_xlabel('time (s)')
-#    ax1.set_ylabel('Activation')
-
-    gs1=gs[0,0].subgridspec(2,1)
-    #ax1 = f.add_subplot(gs[0, 0])
-
-    ax11 = f.add_subplot(gs1[0,0])
-    ax12 = f.add_subplot(gs1[1,0])
-    #spec21 = gridspec.GridSpec(nrows=2, ncols=1, figure=ax1)
-
-    ax11.plot('time','pressure_arteries',data=data_structure,label='Arterial')
-    if t_limits:
-        ax11.set_xlim(t_limits)
-    #ax1.set_xlabel('time (s)', fontsize = 15)
-    ax11.set_ylabel('pressure', fontsize = 20)
-    ax11.tick_params(labelsize = 25)
-    ax11.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
-    ax11.set_title('Baroreceptor',fontsize=30,fontweight='bold')
-
-    if(hasattr(data_structure,'heart_period')):
-
-        #ax12 = f.add_subplot(spec2[1, 0])
-        ax12.plot('time','heart_period',data=data_structure)
-        if t_limits:
-            ax12.set_xlim(t_limits)
-        #ax2.set_xlabel('time (s)', fontsize = 20)
-        ax12.set_ylabel('heart period', fontsize = 20)
-        ax12.tick_params(labelsize = 25)
-
-    gs2 = gs[1,0].subgridspec(1,1)
-    ax2 = f.add_subplot(gs2[0, 0])
-    #ax3 = f.add_subplot(spec2[2, 0])
-    ax2.plot('time','hs_force',data=data_structure, label='hs force')
-    #if (signal == "stress"):
-        #ax3.plot('time','hs_force_null',data=data_structure, label='hs force null')
-    #ax3.set_xlabel('time (s)', fontsize = 20)
-    if t_limits:
-        ax2.set_xlim(t_limits)
-    ax2.set_ylabel('cell force \n(N/m2)', fontsize = 20)
-    ax2.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax2.tick_params(labelsize = 25)
-    ax2.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
-
-    gs3 = gs[2,0].subgridspec(3,1)
-    ax31 = f.add_subplot(gs3[0,0])
-    ax32 = f.add_subplot(gs3[1,0])
-    ax33 = f.add_subplot(gs3[2,0])
-
-    #ax31 = f.add_subplot(spec2[3, 0])
-    ax31.set_title('Concentric growth', fontsize=30,fontweight='bold')
-    ax31.plot('time', 'cb_force', data=data_structure, label='cb_force')
-    if (signal == "stress"):
-        ax31.plot('time','cb_force_null',data=data_structure, label='cb force null')
-    if t_limits:
-        ax31.set_xlim(t_limits)
-    ax31.set_ylabel('Active force \n(N/m2)', fontsize = 20)
-    ax31.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax31.tick_params(labelsize = 25)
-    ax31.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
-
-    #ax5 = f.add_subplot(spec2[4, 0])
-    ax32.plot('time','ventricle_wall_thickness',data=data_structure, label='lv')
-    #ax5.plot('time','filtered_wall_thickness','r-',data=data_structure, label='filtered')
-    if t_limits:
-        ax32.set_xlim(t_limits)
-    ax32.set_ylabel('wall thickness (m)', fontsize = 20)
-
-    #ax4.set_xlabel('time (s)')
-    ax32.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax32.tick_params(labelsize = 25)
-    ax32.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
-
-    #ax6 = f.add_subplot(spec2[5, 0])
-    ax33.plot('time','ventricle_wall_volume',data=data_structure)
-    if t_limits:
-        ax33.set_xlim(t_limits)
-    #ax5.set_xlabel('time (s)', fontsize = 20)
-    ax33.set_ylabel('wall volume (L)', fontsize = 20)
-    ax33.tick_params(labelsize = 25)
-
-
-    gs4=gs[3,0].subgridspec(4,1)
-
-    ax41 = f.add_subplot(gs4[0,0])
-    ax42 = f.add_subplot(gs4[1,0])
-    ax43 = f.add_subplot(gs4[2,0])
-    ax44 = f.add_subplot(gs4[3,0])
-
-    ax41.set_title('Eccentric growth',fontsize=30,fontweight='bold')
-    if (signal == "strain"):
-        #ax7 = f.add_subplot(spec2[6, 0])
-        ax41.plot('time', 'cell_strain', data=data_structure, label='cell_strain')
-        ax41.plot('time', 'cell_strain_null', data=data_structure, label='cell_strain null')
-        if t_limits:
-            ax41.set_xlim(t_limits)
-        #ax9.set_xlabel('time (s)', fontsize = 20)
-        ax41.set_ylabel('cell strain', fontsize = 20)
-        ax41.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-        ax41.tick_params(labelsize = 25)
-        ax41.legend(bbox_to_anchor=(1.05, 1))
-
-    #ax41 = f.add_subplot(spec2[6, 0])
-    ax41.plot('time', 'pas_force', data=data_structure, label='Passive force')
-    if (signal == "stress"):
-        ax41.plot('time', 'pas_force_null', data=data_structure, label='Passive force null')
-
-    #ax6.set_xlabel('time (s)', fontsize = 15)
-    if t_limits:
-        ax41.set_xlim(t_limits)
-    ax41.set_ylabel('Passive force \n(N/m2)', fontsize = 20)
-    ax41.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax41.tick_params(labelsize = 25)
-    ax41.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
-
-    #ax8 = f.add_subplot(spec2[7, 0])
-    ax42.plot('time','number_of_hs',data=data_structure,label='number')
-    #ax9.plot('time','filtered_n_hs','r-',data=data_structure,label='filtered')
-    if t_limits:
-        ax42.set_xlim(t_limits)
-    ax42.set_ylabel('half_sarcomeres', fontsize = 20)
-    ax42.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax42.tick_params(labelsize = 25)
-    ax42.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
-
-    #ax9 = f.add_subplot(spec2[8, 0])
-    ax43.plot('time', 'hs_length', data=data_structure, label='hs length')
-    #ax9.plot('time', 'cell_strain_null', data=data_structure, label='cell_strain null')
-        #ax9.set_xlabel('time (s)', fontsize = 15)
-    if t_limits:
-        ax43.set_xlim(t_limits)
-    ax43.set_ylabel('cell length', fontsize = 20)
-    ax43.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax43.tick_params(labelsize = 25)
-    ax43.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
-
-    #ax10 = f.add_subplot(spec2[9, 0])
-    ax44.plot('time','volume_ventricle',data=data_structure)
-    if t_limits:
-        ax44.set_xlim(t_limits)
-    ax44.set_xlabel('time (s)', fontsize = 20)
-    ax44.set_ylabel('ventricle volume \n(L)', fontsize = 20)
-    ax44.tick_params(labelsize = 25)
-
-
-    if (output_file_string):
-        save_figure_to_file(f, output_file_string, dpi)
-def display_n_hs(data_structure, output_file_string="",signal="",t_limits=[],dpi=None):
-    f = plt.figure(constrained_layout=True)
-    no_of_rows = 3
-    no_of_cols = 1
-
-    f = plt.figure(constrained_layout=True)
-    f.set_size_inches([15, 8])
-    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
-                              figure=f)
-    ax1 = f.add_subplot(spec2[0, 0])
-    ax1.plot('time', 'pas_force', data=data_structure, label='Passive force')
-    if (signal == "stress"):
-        ax1.plot('time', 'pas_force_null', data=data_structure, label='Passive force null')
-    if t_limits:
-        ax1.set_xlim(t_limits)
-    ax1.set_ylabel('Passive force \n(N/m2)', fontsize = 10)
-    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax1.tick_params(labelsize = 10)
-    ax1.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
-
-    ax2 = f.add_subplot(spec2[1, 0])
-    ax2.plot('time','number_of_hs',data=data_structure,label='original')
-    #ax2.plot('time','filtered_n_hs','r-',data=data_structure,label='filtered')
-    if t_limits:
-        ax2.set_xlim(t_limits)
-    ax2.set_ylabel('number of \n half_sarcomeres', fontsize = 10)
-    ax2.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax2.tick_params(labelsize = 10)
-    ax2.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
-
-    ax3 = f.add_subplot(spec2[2, 0])
-    ax3.plot('time', 'hs_length', data=data_structure, label='hs length')
-    #ax9.plot('time', 'cell_strain_null', data=data_structure, label='cell_strain null')
-        #ax9.set_xlabel('time (s)', fontsize = 15)
-    if t_limits:
-        ax3.set_xlim(t_limits)
-    ax3.set_ylabel('cell length', fontsize = 10)
-    ax3.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
-    ax3.tick_params(labelsize = 10)
-    ax3.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
-    if (output_file_string):
-        save_figure_to_file(f, output_file_string, dpi)
 
 def display_circulatory(data_structure, output_file_string="", t_limits=[],
                        dpi=None):
-    no_of_rows = 3
+    no_of_rows = 4
     no_of_cols = 1
 
     f = plt.figure(constrained_layout=True)
@@ -642,7 +471,18 @@ def display_circulatory(data_structure, output_file_string="", t_limits=[],
     ax2.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
 
     ax3 = f.add_subplot(spec2[2, 0])
-    ax3.plot('time', 'flow_ventricle_to_aorta', data=data_structure,
+    ax3.plot('time', 'volume_aortic_regurgitation', data=data_structure, label='Aorta')
+    ax3.plot('time', 'volume_mitral_regurgitation', data=data_structure, label='Mitral')
+    ax3.set_ylabel('Volume (ml)', fontsize = 30)
+    ax3.tick_params(labelsize = 30)
+    if t_limits:
+        ax2.set_xlim(t_limits)
+    #ax3.set_ylim([1e-2, 10])
+    #ax2.set_yticks(np.array([1e-3, 1e-2, 1e-1, 1, 10]))
+    ax3.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+
+    ax4 = f.add_subplot(spec2[3, 0])
+    ax4.plot('time', 'flow_ventricle_to_aorta', data=data_structure,
              label='Ventricle to Aorta')
 #    ax3.plot('time', 'flow_aorta_to_arteries', data=data_structure,
 #             label='Aorta to Arteries')
@@ -650,18 +490,19 @@ def display_circulatory(data_structure, output_file_string="", t_limits=[],
 #             label='Arteries to arterioles')
 #    ax3.plot('time', 'flow_arterioles_to_capillaries', data=data_structure,
 #             label='Arterioles to capillaries')
-    ax3.plot('time', 'flow_capillaries_to_veins', data=data_structure,
+    ax4.plot('time', 'flow_capillaries_to_veins', data=data_structure,
              label='Capillaries to Veins')
-    ax3.plot('time', 'flow_veins_to_ventricle', data=data_structure,
+    ax4.plot('time', 'flow_veins_to_ventricle', data=data_structure,
              label='Veins to Ventricle')
-    ax3.set_ylabel('Flows',fontsize =30)
-    ax3.tick_params(labelsize = 30)
-    ax3.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+    ax4.set_ylabel('Flows',fontsize =30)
+    ax4.tick_params(labelsize = 30)
+    ax4.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
     if t_limits:
-        ax3.set_xlim(t_limits)
+        ax4.set_xlim(t_limits)
 
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)
+
 def display_active_force(data_structure, output_file_string="", t_limits=[],
                        dpi=None):
 
@@ -728,6 +569,154 @@ def display_active_force(data_structure, output_file_string="", t_limits=[],
     ax6.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
     ax6.tick_params(labelsize = 30)
     ax6.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+
+    if (output_file_string):
+        save_figure_to_file(f, output_file_string, dpi)
+
+def display_systolic_function(data_structure, output_file_string="", t_limits=[],
+                       dpi=None):
+
+    no_of_rows = 3
+    no_of_cols = 1
+
+    f = plt.figure(constrained_layout=True)
+    f.set_size_inches([7, 5])
+    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
+                              figure=f)
+
+    if(hasattr(data_structure,'heart_period')):
+        ax0 = f.add_subplot(spec2[0, 0])
+        ax0.plot('time','heart_rate',data=data_structure)
+        if t_limits:
+            ax0.set_xlim(t_limits)
+        ax0.set_ylabel('HR', fontsize = 10)
+        #ax0.tick_params(labelsize = 25)
+
+    ax1 = f.add_subplot(spec2[1, 0])
+    ax1.plot('time', 'stroke_volume', data=data_structure, label='SV')
+    if t_limits:
+        ax1.set_xlim(t_limits)
+    ax1.set_ylabel('SV ($ml$)', fontsize = 10)
+
+    """ax2 = f.add_subplot(spec2[2, 0])
+    ax2.plot('time', 'cardiac_output', data=data_structure, label='CO')
+    if t_limits:
+        ax2.set_xlim(t_limits)
+    ax2.set_ylabel('CO ($ml/min$)', fontsize = 10)"""
+
+
+    ax3 = f.add_subplot(spec2[2, 0])
+    ax3.plot('time', 'ejection_fraction', data=data_structure, label='EF')
+    if t_limits:
+        ax3.set_xlim(t_limits)
+    ax3.set_ylabel('EF (%)', fontsize = 10)
+    ax3.set_xlabel('time (s)', fontsize = 10)
+
+
+
+    #if data_structure["mitral_regurgitant_volume"][-1] != 0:
+    """ax4 = f.add_subplot(spec2[4, 0])
+    ax4.plot('time', 'mitral_regurgitant_volume', data=data_structure, label='MRV')
+    if t_limits:
+        ax4.set_xlim(t_limits)
+    ax4.set_ylabel('MRV ($ml$)', fontsize = 10)
+    ax4.set_xlabel('time (s)', fontsize = 10)"""
+    #if data_structure["aortic_regurgitant_volume"][-1] != 0:
+#    ax4 = f.add_subplot(spec2[4, 0])
+#    ax4.plot('time', 'aortic_regurgitant_volume', data=data_structure, label='ARV')
+#    if t_limits:
+#        ax4.set_xlim(t_limits)
+#    ax4.set_ylabel('ARV ($ml$)', fontsize = 10)
+#    ax4.set_xlabel('time (s)', fontsize = 10)
+
+    if (output_file_string):
+        save_figure_to_file(f, output_file_string, dpi)
+
+def display_regurgitation(data_structure, output_file_string="", t_limits=[],
+                       dpi=None):
+    no_of_rows = 2
+    no_of_cols = 1
+
+    f = plt.figure(constrained_layout=True)
+    f.set_size_inches([10, 5])
+    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
+                              figure=f)
+    ax0 = f.add_subplot(spec2[0, 0])
+    ax0.plot('time', 'mitral_regurgitant_volume', data=data_structure, label='MRV')
+    if t_limits:
+        ax0.set_xlim(t_limits)
+    ax0.set_ylabel('MRV (L)', fontsize = 10)
+
+    ax1 = f.add_subplot(spec2[1, 0])
+    ax1.plot('time', 'aortic_regurgitant_volume', data=data_structure, label='ARV')
+    if t_limits:
+        ax1.set_xlim(t_limits)
+    ax1.set_ylabel('ARV (L)', fontsize = 10)
+
+    if (output_file_string):
+        save_figure_to_file(f, output_file_string, dpi)
+
+def display_ventricular_dimensions(data_structure, output_file_string="", t_limits=[],
+                       dpi=None):
+    no_of_rows = 7
+    no_of_cols = 1
+
+    f = plt.figure(constrained_layout=True)
+    f.set_size_inches([7, 10])
+    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
+                              figure=f)
+
+    ax0 = f.add_subplot(spec2[0, 0])
+    ax0.plot('time','LVEDV',data=data_structure)
+    if t_limits:
+        ax0.set_xlim(t_limits)
+    ax0.set_ylabel('LVEDV ($ml$)', fontsize = 10)
+    #ax0.tick_params(labelsize = 25)
+
+    ax1 = f.add_subplot(spec2[1, 0])
+    ax1.plot('time','LVEDVi',data=data_structure)
+    if t_limits:
+        ax1.set_xlim(t_limits)
+    ax1.set_ylabel('LVEDVi ($ml/m^2$)', fontsize = 10)
+    #ax1.tick_params(labelsize = 25)
+
+    ax2 = f.add_subplot(spec2[2, 0])
+    ax2.plot('time','LVESV',data=data_structure)
+    if t_limits:
+        ax2.set_xlim(t_limits)
+    ax2.set_ylabel('LVESV ($ml$)', fontsize = 10)
+    #ax2.tick_params(labelsize = 25)
+
+    ax3 = f.add_subplot(spec2[3, 0])
+    ax3.plot('time','LVESVi',data=data_structure)
+    if t_limits:
+        ax3.set_xlim(t_limits)
+    ax3.set_ylabel('LVESVi ($ml/m^2$)', fontsize = 10)
+    #ax3.tick_params(labelsize = 25)
+
+    ax4 = f.add_subplot(spec2[4, 0])
+    ax4.plot('time','ventricle_wall_thickness',data=data_structure)
+    if t_limits:
+        ax4.set_xlim(t_limits)
+    ax4.set_ylabel('LVW_t(mm)', fontsize = 10)
+    ax4.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+    #ax4.tick_params(labelsize = 10)
+    #ax4.legend(bbox_to_anchor=(1.05, 1),fontsize = 20)
+
+    ax5=f.add_subplot(spec2[5,0])
+    #ax5.plot('time','ventricle_wall_mass',data=data_structure, label="LVM")
+    ax5.plot('time','ventricle_wall_mass_mean',data=data_structure, label="mean")
+    if t_limits:
+        ax5.set_xlim(t_limits)
+    ax5.set_ylabel('LVM ($g$)', fontsize = 10)
+
+    ax6=f.add_subplot(spec2[6,0])
+    #ax6.plot('time','ventricle_wall_mass_i',data=data_structure, label="LVMi")
+    ax6.plot('time','ventricle_wall_mass_i_mean',data=data_structure, label="mean")
+    if t_limits:
+        ax6.set_xlim(t_limits)
+    ax6.set_ylabel('LVMi ($g/m^2$)', fontsize = 10)
+    ax6.set_xlabel('time (s)', fontsize = 10)
 
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)

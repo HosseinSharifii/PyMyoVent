@@ -44,6 +44,7 @@ class half_sarcomere():
         self.hs_time = 0.0
         self.data_buffer_index = int(0)
         self.hs_data = pd.DataFrame({'hs_time' : np.zeros(self.data_buffer_size),
+                                     'activation': np.zeros(self.data_buffer_size),
                                      'hs_length' : self.hs_length * np.ones(self.data_buffer_size),
                                      'hs_force' : np.zeros(self.data_buffer_size),
                                      'cb_force' : np.zeros(self.data_buffer_size),

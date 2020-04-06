@@ -634,11 +634,11 @@ def computeRates(voi, states, constants,activation): #activation
     algebraic[85] = algebraic[82]+algebraic[84]
 
     #print('voi=',voi)
-    #algebraic[4] = custom_piecewise([greater_equal(voi-floor(voi/constants[1])*constants[1] , \
-    #               constants[0]) & less_equal(voi-floor(voi/constants[1])*constants[1] , \
-    #               constants[0]+constants[2]), -constants[3] , True, 0.00000])
-    #print('algebraic[4]',algebraic[4])
-    algebraic[4] = activation * -9.5
+    algebraic[4] = custom_piecewise([greater_equal(voi-floor(voi/constants[1])*constants[1] , \
+                   constants[0]) & less_equal(voi-floor(voi/constants[1])*constants[1] , \
+                   constants[0]+constants[2]), -constants[3] , True, 0.00000])
+    print('algebraic[4]',algebraic[4])
+    #algebraic[4] = activation * -9.5
     rates[0] = -(algebraic[36]+algebraic[39]+algebraic[43]+algebraic[45]\
                 +algebraic[53]+algebraic[55]+algebraic[56]+algebraic[60]+algebraic[79]\
                 +algebraic[61]+algebraic[62]+algebraic[71]+algebraic[88]+algebraic[85]+algebraic[54]+algebraic[4])

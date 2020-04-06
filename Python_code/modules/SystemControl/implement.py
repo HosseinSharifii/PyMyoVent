@@ -146,7 +146,7 @@ def return_contractility(self,time_step,i):
         dk3dt = self.G_k3*(self.bc[i-delay_k3]-self.bc_mid)*self.k3_0
         k3 = dk3dt*time_step + k3_0
         self.k3 = k3
-
+        
     if (self.baro_scheme=="Ursino_1998"):
         #determine the outputs of static characteristics (steady-state changes)
         if i<self.D_k1:
@@ -209,6 +209,7 @@ def update_data_holder(self,time_step):
         self.sys_time = self.sys_time + time_step
         self.data_buffer_index += 1
         self.sys_data.at[self.data_buffer_index, 'heart_period']=self.T
+        self.sys_data.at[self.data_buffer_index, 'heart_rate']=60/self.T
         self.sys_data.at[self.data_buffer_index, 'T_prime']=self.T_prime
         self.sys_data.at[self.data_buffer_index, 'k_1'] = self.k1
         self.sys_data.at[self.data_buffer_index, 'k_3'] = self.k3

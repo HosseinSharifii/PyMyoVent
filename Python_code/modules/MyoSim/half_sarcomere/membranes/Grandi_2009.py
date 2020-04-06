@@ -496,7 +496,7 @@ def initConsts():
     constants[122] = (1.00000/constants[109])*log(constants[115]/constants[116])
     return (states, constants)
 
-def computeRates(voi, states, constants): #activation
+def computeRates(voi, states, constants,activation):
     rates = [0.0] * sizeStates; algebraic = [0.0] * sizeAlgebraic
     rates[3] = constants[123]
     rates[18] = ((1.70000*states[4])/1.00000)*(1.00000-states[18])-0.0119000*states[18]
@@ -609,8 +609,9 @@ def computeRates(voi, states, constants): #activation
     algebraic[95] = constants[98]*constants[48]*(states[0]-algebraic[33])
     algebraic[109] = (algebraic[71]+algebraic[95]+algebraic[92])-2.00000*algebraic[87]
     rates[5] = ((-algebraic[109]*constants[2])/(constants[113]*2.00000*constants[95])+(constants[11]/constants[113])*(states[4]-states[5])+(constants[12]/constants[113])*(states[24]-states[5]))-algebraic[104]
-    algebraic[9] = custom_piecewise([less_equal( voi % 1000.00 , 5.00000), 9.50000 , True, 0.00000])
-    #algebraic[9] =activation * -9.5
+    #algebraic[9] = custom_piecewise([less_equal( voi % 1000.00 , 5.00000), 9.50000 , True, 0.00000])
+    #print(algebraic[9])
+    algebraic[9] =activation * -150
     algebraic[43] = algebraic[41]+algebraic[42]
     algebraic[30] = (1.00000/constants[109])*log(constants[17]/states[3])
     algebraic[44] = 1.00000/(1.00000+exp((states[0]+74.0000)/24.0000))
@@ -806,27 +807,42 @@ def solve_system():
     (init_states, constants) = initConsts()
 
     # Set timespan to solve over
-    dt=1
-    voi = np.arange(0,5000,dt)
+    if (1):
+        dt=1
+        voi = np.arange(0,500,dt)
 
-    states = array([[0.0] * len(voi)] * sizeStates)
-    states[:,0] = init_states
+        states = array([[0.0] * len(voi)] * sizeStates)
+        states[:,0] = init_states
 
-    for (i,t) in enumerate(voi[1:]):
-        if ((i>100)&(i<110)):
-            activation = 1.0
-        else:
-            activation = 0.0
-        sol = solve_ivp(partial(computeRates,
-                            constants=constants),
-                            #activation=activation),
-                            voi[i]+[0, dt], states[:,i],
-                            method='BDF')
+        for (i,t) in enumerate(voi[1:]):
+            if ((i>100)&(i<110)):
+                activation = 1.0
+            else:
+                activation = 0.0
+                sol = solve_ivp(partial(computeRates,constants=constants,activation=activation),\
+                0*voi[i]+[0, dt], states[:,i],method='BDF')
 
 
-        if (i<(len(voi)-1)):
-            states[:,i+1] = sol.y[:,-1]
+                if (i<(len(voi)-1)):
+                    states[:,i+1] = sol.y[:,-1]
+    if (0):
+        dt=1
+        voi = np.arange(0,1000,dt)
 
+        states = array([[0.0] * len(voi)] * sizeStates)
+        states[:,0] = init_states
+
+        for (i,t) in enumerate(voi[1:]):
+            if ((i>100)&(i<110)):
+                activation = 1.0
+            else:
+                activation = 0.0
+                sol = solve_ivp(partial(computeRates,constants=constants),\
+                0*voi[i]+[0, dt], states[:,i],method='BDF')
+
+
+                if (i<(len(voi)-1)):
+                    states[:,i+1] = sol.y[:,-1]
     #print(init_states)
     #print(sol.y)
     #print('size y=',np.shape(sol.y))
@@ -857,7 +873,7 @@ def plot_results(voi,states,algebraic):
     #Ca legends
 
     #Ca_indicies_for_states=np.array([4,5,23,24,30])
-    Ca_indicies_for_states=np.array([23])
+    Ca_indicies_for_states=np.array([24])
     #Ca_indicies_for_algebraic=np.array([46,47])
 
     size_Ca_for_states=len(Ca_indicies_for_states)
@@ -872,12 +888,7 @@ def plot_results(voi,states,algebraic):
     for i in range (0,size_Ca_for_states):
         Ca_legend_states[i]=legend_states[Ca_indicies_for_states[i]]
         Ca_states[i]=states[Ca_indicies_for_states[i]]
-    #for i in range (0,size_Ca_for_algebraic):
-    #    Ca_legend_algebraic[i]=legend_algebraic[Ca_indicies_for_algebraic[i]]
-    #    Ca_algebraic[i]=algebraic[Ca_indicies_for_algebraic[i]]
 
-    #print('size Ca_states=',np.shape(Ca_states))
-    #print('size Ca_algebraic=',np.shape(Ca_algebraic))
 
     #states
     f=plt.figure(1,constrained_layout=True)
@@ -892,16 +903,7 @@ def plot_results(voi,states,algebraic):
     print("Saving Ca_states figure to")
     save_figure_to_file(f,"Grandi_Ca_states", dpi=None)
 
-    #algebraic
-    #f=plt.figure(2,constrained_layout=True)
-    #y_axis_algebraic=vstack(Ca_algebraic).T
-    #plt.plot(voi, vstack(y_axis_algebraic))
-    #plt.xlabel(legend_voi)
-    #plt.ylabel('algebraic')
-    #plt.legend(Ca_legend_algebraic)
-    #print("Saving Ca_algebraic figure to")
-    #save_figure_to_file(f, "Ca_algebraic", dpi=None)
-    #plt.show()
+
 
 def save_figure_to_file(f,fname,dpi=None):
     "This function is adopted by Hossein.Sharifi"

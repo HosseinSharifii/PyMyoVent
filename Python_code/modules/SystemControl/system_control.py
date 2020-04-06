@@ -10,24 +10,31 @@ class system_control():
     from .implement import return_activation, update_data_holder
     from .display import display_baro_results
 
-    def __init__(self,baro_params,data_buffer_size):#,growth_activation): #baro_params
+    def __init__(self,baro_params,hs_params,data_buffer_size):#,growth_activation): #baro_params
         """input constant parameters"""
         baroreflex = baro_params
         self.baro_scheme = baroreflex["baro_scheme"][0]
         #self.growth_activation = growth_activation
 
-        self.T=float(baroreflex["simulation"]["basal_heart_period"][0])
-        self.activation_duty_ratio = \
-        float(baroreflex["simulation"]["duty_ratio"][0])
-        self.dt = float(baroreflex["simulation"]["time_step"][0])
+#        self.T=float(baroreflex["simulation"]["basal_heart_period"][0])
+#        self.activation_duty_ratio = \
+#        float(baroreflex["simulation"]["duty_ratio"][0])
+#        self.dt = float(baroreflex["simulation"]["time_step"][0])
 
         if (self.baro_scheme == "fixed_heart_rate"):
 
+            temp = baroreflex["fixed_heart_rate"]
+
+            self.T=float(temp["simulation"]["basal_heart_period"][0])
+            self.activation_duty_ratio = \
+            float(temp["simulation"]["duty_ratio"][0])
+            self.dt = float(temp["simulation"]["time_step"][0])
+
             self.no_of_time_points = \
-                int(baroreflex["simulation"]["no_of_time_points"][0])
+                int(temp["simulation"]["no_of_time_points"][0])
             self.activation_frequency = float(1/self.T)
             self.activation_duty_ratio = \
-                    float(baroreflex["simulation"]["duty_ratio"][0])
+                    float(temp["simulation"]["duty_ratio"][0])
             self.t = self.dt*np.arange(1, self.no_of_time_points+1)
             self.predefined_activation_level =\
             0.5*(1+signal.square(np.pi+2*np.pi*self.activation_frequency*self.t,
@@ -36,6 +43,12 @@ class system_control():
             self.sys_data = pd.DataFrame({})
 
         if (self.baro_scheme == "simple_baroreceptor"):
+            temp = baroreflex["simple_baroreceptor"]
+
+            self.T=float(temp["simulation"]["basal_heart_period"][0])
+            self.activation_duty_ratio = \
+            float(temp["simulation"]["duty_ratio"][0])
+            self.dt = float(temp["simulation"]["time_step"][0])
             #Activation function
             self.T_systole = self.activation_duty_ratio * self.T
             self.T_diastole = self.T-self.T_systole
@@ -49,37 +62,37 @@ class system_control():
 
             # afferent pathway (baroreceptor control)
             self.bc = np.array([])
-            self.bc_max = float(baroreflex["afferent"]["bc_max"][0])
-            self.bc_min =  float(baroreflex["afferent"]["bc_min"][0])
+            self.bc_max = float(temp["afferent"]["bc_max"][0])
+            self.bc_min =  float(temp["afferent"]["bc_min"][0])
             self.bc_mid = float((self.bc_max+self.bc_min)/2)
-            self.slope = float(baroreflex["afferent"]["slope"][0])
-            self.P_n = float(baroreflex["afferent"]["P_n"][0])
+            self.slope = float(temp["afferent"]["slope"][0])
+            self.P_n = float(temp["afferent"]["P_n"][0])
 
             #efferent pathway (regulation)
                 #heart period
             self.T_prime = self.T
             self.T0 = self.T
             self.delta_T_prime = [0.0]
-            self.G_T = float(baroreflex["regulation"]["heart_period"]["G_T"][0])
-            D_T_in_second = float(baroreflex["regulation"]["heart_period"]["D_T"][0])
+            self.G_T = float(temp["regulation"]["heart_period"]["G_T"][0])
+            D_T_in_second = float(temp["regulation"]["heart_period"]["D_T"][0])
             self.D_T = int(D_T_in_second / self.dt)
-            self.tau_T = float(baroreflex["regulation"]["heart_period"]["tau_T"][0])
+            self.tau_T = float(temp["regulation"]["heart_period"]["tau_T"][0])
                 #contractility
                     #k_1
-            self.k1 = float(baroreflex["regulation"]["k_1"]["k1"][0])
+            self.k1 = float(hs_params["myofilaments"]["k_1"][0]) #float(temp["regulation"]["k_1"]["k1"][0])
             self.k1_0 = self.k1
-            self.G_k1 = float(baroreflex["regulation"]["k_1"]["G_k1"][0])
-            D_k1_in_second = float(baroreflex["regulation"]["k_1"]["D_k1"][0])
+            self.G_k1 = float(temp["regulation"]["k_1"]["G_k1"][0])
+            D_k1_in_second = float(temp["regulation"]["k_1"]["D_k1"][0])
             self.D_k1 = int(D_k1_in_second / self.dt)
-            self.tau_k1 = float(baroreflex["regulation"]["k_1"]["tau_k1"][0])
+            self.tau_k1 = float(temp["regulation"]["k_1"]["tau_k1"][0])
             self.delta_k1=0.0
                     #k_3
-            self.k3 = float(baroreflex["regulation"]["k_3"]["k3"][0])
+            self.k3 = float(hs_params["myofilaments"]["k_3"][0])#float(temp["regulation"]["k_3"]["k3"][0])
             self.k3_0 = self.k3
-            self.G_k3 = float(baroreflex["regulation"]["k_3"]["G_k3"][0])
-            D_k3_in_second = float(baroreflex["regulation"]["k_3"]["D_k3"][0])
+            self.G_k3 = float(temp["regulation"]["k_3"]["G_k3"][0])
+            D_k3_in_second = float(temp["regulation"]["k_3"]["D_k3"][0])
             self.D_k3 = int(D_k3_in_second / self.dt)
-            self.tau_k3 = float(baroreflex["regulation"]["k_3"]["tau_k3"][0])
+            self.tau_k3 = float(temp["regulation"]["k_3"]["tau_k3"][0])
             self.delta_k3 = 0.0
 
 
@@ -169,6 +182,7 @@ class system_control():
                                                 np.zeros(self.data_buffer_size)})
 
             self.sys_data.at[0, 'heart_period'] = self.T
+            self.sys_data.at[0, 'heart_rate'] = 60/self.T
             self.sys_data.at[0, 'T_prime'] = self.T
             self.sys_data.at[0, 'k_1'] = self.k1
             self.sys_data.at[0, 'k_3'] = self.k3
