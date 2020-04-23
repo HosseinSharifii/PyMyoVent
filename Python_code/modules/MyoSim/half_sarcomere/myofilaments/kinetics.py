@@ -106,3 +106,20 @@ def update_3state_with_SRX(self, time_step, Ca_conc):
 #        print(self.y)
 #        print("self.y is less than 0")
 #        quit()
+    #
+def return_ATPase(self,wall_volume):
+
+    N0 = self.parent_hs.cb_number_density
+    delta_G = self.parent_hs.delta_G
+
+    L0 = 1e-9*self.parent_hs.L0
+    N_A = self.parent_hs.N_A
+
+    fluxes = return_fluxes(self,self.y,self.parent_hs.Ca_conc)
+    J4 = np.sum(fluxes['J4'])
+    # convert liter to meter^3
+    w_vol = wall_volume*0.001
+
+    self.ATPase = (N0 * w_vol * delta_G * J4)/(L0 * N_A)
+
+    return self.ATPase

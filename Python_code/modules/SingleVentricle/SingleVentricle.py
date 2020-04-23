@@ -7,6 +7,7 @@ from scipy import signal
 from scipy.integrate import solve_ivp
 from scipy.constants import mmHg as mmHg_in_pascals
 
+
 from modules.MyoSim.half_sarcomere import half_sarcomere as hs
 from modules.SystemControl import system_control as syscon
 from modules.Perturbation import perturbation as pert
@@ -20,13 +21,11 @@ class single_circulation():
     from .display import display_ventricular_dimensions
     def __init__(self, single_circulation_simulation, xml_file_string=None):
 
-        from .implement import return_lv_circumference,return_lv_pressure
+        from .implement import return_lv_circumference,return_lv_pressure, return_ATPase
         # Pull off stuff
 #        self.input_xml_file_string = xml_file_string
-        self.multithreading_activation = False
-        mt = single_circulation_simulation["multi_threads"]["multithreading_activation"][0]
-        if mt:
-            self.multithreading_activation = True
+        self.multithreading_activation = \
+            single_circulation_simulation["multi_threads"]["multithreading_activation"][0]
 
         self.output_parameters = \
             single_circulation_simulation["output_parameters"]
@@ -127,6 +126,12 @@ class single_circulation():
             self.ventricle_resistance_perturbation =\
             self.pert.ventricle_resistance_perturbation
 
+            self.k_1_perturbation = self.pert.k_1_perturbation
+
+            self.k_2_perturbation = self.pert.k_2_perturbation
+
+            self.k_4_0_perturbation = self.pert.k_4_0_perturbation
+
         # Pull off the half_sarcomere parameters
         hs_params = single_circulation_simulation["half_sarcomere"]
         self.hs = hs.half_sarcomere(hs_params, self.output_buffer_size)
@@ -162,7 +167,7 @@ class single_circulation():
 
             self.driven_signal = growth_params["driven_signal"][0]
 
-            if self.driven_signal != "stress" and "ATPase":
+            if self.driven_signal != "stress" and self.driven_signal!="ATPase":
                 print('Growth driven signal is not defined correctly!')
 
             initial_numbers_of_hs = self.n_hs
@@ -175,16 +180,12 @@ class single_circulation():
             #self.growth_switch = True
 
         # Baro
-        #self.baro_activation = self.baro_params["baro_activation"][0]
         self.syscon=syscon.system_control(self.baro_params,hs_params,
                                     self.output_buffer_size)
-
-
 
         print("hsl: %f" % self.hs.hs_length)
         print("slack hsl: %f" % self.slack_hsl)
         print("slack_lv_circumference %f" % self.lv_circumference)
-
 
         # Set the initial volumes with most of the blood in the veins
         initial_ventricular_volume = 1.5 * self.ventricle_slack_volume
@@ -201,8 +202,12 @@ class single_circulation():
         #Valve leakages
         self.vl = np.zeros(2)
 
+        # ATPase
+#        self.ATPase_activation = \
+#            single_circulation_simulation["ATPase"][0]
+
         # saving data
-        self.saving_data_activation = False
+#        self.saving_data_activation = False
         self.saving_data_activation =  \
             single_circulation_simulation["saving_to_spreadsheet"]["saving_data_activation"][0]
         if self.saving_data_activation:
@@ -256,7 +261,7 @@ class single_circulation():
                                       np.zeros(self.output_buffer_size),
                                   'volume_perturbation':
                                       np.zeros(self.output_buffer_size),
-#                                  'ventricle_wall_thickness':
+#                                  'ATPase':
 #                                     np.zeros(self.output_buffer_size),
                                   'ventricle_wall_volume':
                                     np.full(self.output_buffer_size,1000*self.ventricle_wall_volume),
@@ -279,8 +284,13 @@ class single_circulation():
         self.data.at[0, 'volume_capillaries'] = self.v[3]
         self.data.at[0, 'volume_veins'] = self.v[4]
         self.data.at[0, 'volume_ventricle'] = 1000*self.v[-1]
+
         self.data.at[0, 'volume_aortic_regurgitation'] = self.vl[0]
         self.data.at[0, 'volume_mitral_regurgitation'] = self.vl[1]
+
+        """if self.hs.ATPase_activation:
+            self.ATPase = return_ATPase(self)
+            self.data.at[0, 'ATPase'] = self.ATPase"""
 
         self.prof_activation = \
             single_circulation_simulation["profiling"]["profiling_activation"][0]
@@ -292,6 +302,7 @@ class single_circulation():
         from .display import display_baro_results,display_growth,display_growth_summary
         from .display import display_systolic_function
         from .display import display_ventricular_dimensions
+        from .display import display_ATPase
 
         # Set up some values for the simulation
         no_of_time_points = \
@@ -306,6 +317,7 @@ class single_circulation():
         if self.prof_activation:
             pr = cProfile.Profile()
             pr.enable()
+
         # Run the simulation
         for i in np.arange(np.size(t)):
 
@@ -335,6 +347,10 @@ class single_circulation():
                             self.venous_resistance_perturbation[i]
                 self.resistance[-1] = self.resistance[-1] +\
                             self.ventricle_resistance_perturbation[i]
+                # Apply perturbation to myosim
+                self.hs.myof.k_1 = self.hs.myof.k_1 + self.k_1_perturbation[i]
+                self.hs.myof.k_2 = self.hs.myof.k_2 + self.k_2_perturbation[i]
+                self.hs.myof.k_4_0 = self.hs.myof.k_4_0 +self.k_4_0_perturbation[i]
 
             # Apply growth activation
             self.growth_activation = self.growth_activation_array[i]
@@ -359,7 +375,8 @@ class single_circulation():
         if self.multithreading_activation:
             return self.data
 
-        self.data = analyze_data(self,self.data)
+
+
 
         if self.prof_activation:
             pr.disable()
@@ -368,7 +385,7 @@ class single_circulation():
         # Circulation
 
         display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0])#,[295,350])
+                           self.output_parameters["summary_figure"][0])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
@@ -380,7 +397,7 @@ class single_circulation():
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
                                self.output_parameters["hs_fluxes_figure"][0])
-
+#        display_Ca(self.data,self.output_parameters["Ca"][0],[5,10])
         #Growth
         if self.growth_activation:
             display_growth(self.data,
@@ -389,11 +406,16 @@ class single_circulation():
             display_growth_summary(self.data,
             self.output_parameters["growth_summary"][0],self.driven_signal)
 
+            self.data = analyze_data(self,self.data)
+
             display_ventricular_dimensions(self.data,
             self.output_parameters["ventricular"][0])
 
-        display_systolic_function(self.data,
-                self.output_parameters["sys_fig"][0])
+            display_systolic_function(self.data,
+                    self.output_parameters["sys_fig"][0])
+
+        if self.hs.ATPase_activation:
+            display_ATPase(self.data,self.output_parameters["ATPase"][0])
 #        display_regurgitation(self.data,
 #                self.output_parameters["regurg_fig"][0])
         if self.saving_data_activation:

@@ -1,6 +1,7 @@
 {
   "output_parameters": {
-
+    "excel_file": ["..\\temp\\demo_1\\demo_1.xlsx"],
+    "input_file": ["..\\temp\\demo_1\\demo_1.json"],
     "summary_figure": ["..\\temp\\demo_1\\demo_1_summary.png"],
     "force_length": ["..\\temp\\demo_1\\demo_1_F_L.png"],
     "pv_figure": ["..\\temp\\demo_1\\demo_1_pv.png"],
@@ -8,50 +9,52 @@
     "flows_figure": ["..\\temp\\demo_1\\demo_1_flows.png"],
     "hs_fluxes_figure": ["..\\temp\\demo_1\\demo_1_hs_fluxes.png"],
     "growth_figure": ["..\\temp\\demo_1\\demo_1_growth.png"],
-    "n_hs": ["..\\temp\\demo_1\\demo_1_nhs.png"],
+    "growth_summary": ["..\\temp\\demo_1\\demo_1_growth_sum.png"],
+    "sys_fig": ["..\\temp\\demo_1\\demo_1_sys.png"],
+    "regurg_fig": ["..\\temp\\demo_1\\demo_1_regurg.png"],
     "active": ["..\\temp\\demo_1\\demo_1_active.png"],
-    "circulatory": ["..\\temp\\demo_1\\demo_1_circulatory.png"]
+    "circulatory": ["..\\temp\\demo_1\\demo_1_circulatory.png"],
+    "ventricular": ["..\\temp\\demo_10\\demo_10_vent.png"],
+    "multi_threading":["..\\temp\\demo_1\\demo_1_multi_thread.png"],
+    "ATPase":["..\\temp\\demo_1\\demo_1_ATPase.png"]
   },
 
   "baroreflex": {
-    "baro_scheme": ["fixed_heart_rate"],
+    "baro_scheme": ["simple_baroreceptor"],
     "fixed_heart_rate":{
       "simulation":{
-        "no_of_time_points": [100000],
+        "no_of_time_points": [10000],
         "time_step": [0.001],
         "duty_ratio": [0.3],
-        "basal_heart_period": [0.833,"s"]
+        "basal_heart_period": [1,"s"]
       }
     },
     "simple_baroreceptor":{
       "simulation":{
-        "no_of_time_points": [20000],
+        "no_of_time_points": [3000],
         "time_step": [0.001],
-        "duty_ratio": [0.1],
-        "basal_heart_period": [0.833,"s"],
-        "duration_of_systole": [0.3,"s"]
+        "duty_ratio": [0.15],
+        "basal_heart_period": [0.9,"s"]
       },
       "afferent": {
         "bc_max": [2],
         "bc_min": [0],
-        "slope": [50,"mmHg"],
-        "P_n": [65,"mmHg"]
+        "slope": [15,"mmHg"],
+        "P_n": [90,"mmHg"]
       },
       "regulation":{
         "heart_period":{
-          "G_T": [0.2],
+          "G_T": [0.05],
           "D_T": [1,"s"],
           "tau_T": [1,"s"]
         },
         "k_1":{
-          "k1": [2,"s^-1"],
-          "G_k1": [-0.2],
+          "G_k1": [-0.05],
           "D_k1": [1,"s"],
           "tau_k1": [1,"s"]
         },
         "k_3":{
-          "k3": [200,"(nm^-1)(s^-1)"],
-          "G_k3": [-0.2],
+          "G_k3": [-0.05],
           "D_k3": [1,"s"],
           "tau_k3": [1,"s"]
         }
@@ -59,21 +62,22 @@
     }
   },
   "perturbations": {
+    "perturbation_activation":[false],
     "volume":{
-      "start_index": [300000],
-      "stop_index": [310000],
-      "increment": [0]
+      "start_index": [50000],
+      "stop_index": [55000],
+      "increment": [-2e-4]
     },
     "valve":{
       "aortic":{
-        "start_index": [200000],
+        "start_index": [0],
         "stop_index": [505000],
-        "increment": [0]
+        "increment": [0.0]
       },
       "mitral":{
-        "start_index": [200000],
+        "start_index": [0],
         "stop_index": [505000],
-        "increment": [0.04]
+        "increment": [0.0]
       }
     },
     "compliance": {
@@ -90,14 +94,14 @@
       "venous":{
         "start_index": [500000],
         "stop_index": [505000],
-        "increment": [-1.4e-5]
+        "increment": [0]
       }
     },
     "resistance": {
       "aorta":{
-        "start_index": [500000],
-        "stop_index": [505000],
-        "increment": [0.016]
+        "start_index": [50000],
+        "stop_index": [60000],
+        "increment": [0]
       },
       "capillaries": {
         "start_index": [500000],
@@ -107,12 +111,29 @@
       "venous":{
         "start_index": [500000],
         "stop_index": [505000],
-        "increment": [-7.2e-3]
+        "increment": [0]
       },
       "ventricle":{
         "start_index": [500000],
         "stop_index": [505000],
-        "increment": [-3.6e-3]
+        "increment": [0]
+      }
+    },
+    "myosim":{
+      "k_1":{
+        "start_index": [25000],
+        "stop_index": [25001],
+        "increment": [0]
+      },
+      "k_2":{
+        "start_index": [25000],
+        "stop_index": [35000],
+        "increment": [0.0]
+      },
+      "k_4_0":{
+        "start_index": [100000],
+        "stop_index": [110000],
+        "increment": [0]
       }
     }
   },
@@ -144,8 +165,10 @@
     },
     "ventricle":{
       "resistance": [20,"s"],
-      "wall_volume": [0.1,"liters"],
-      "slack_volume": [0.08,"liters"]
+      "wall_volume": [0.07,"liters"],
+      "slack_volume": [0.08,"liters"],
+      "wall_density": [1055,"g/l"],
+      "body_surface_area": [1.90,"m^2"]
     }
   },
   "half_sarcomere":{
@@ -153,6 +176,10 @@
     "temperature": [288, "Kelvin"],
     "cb_number_density": [6.9e16, "number of cb's/m^2"],
     "initial_hs_length": [900, "nm"],
+    "ATPase_activation":[true],
+    "delta_energy":[70,"kJ/mol"],
+    "avagadro_number":[6.02e23,"mol^-1"],
+    "referench_hs_length":[1100,"nm"],
 
     "myofilaments":{
       "kinetic_scheme": ["3state_with_SRX"],
@@ -165,7 +192,7 @@
       "k_cb": [0.001, "N*m^-1"],
       "x_ps": [5, "nm"],
       "k_on": [1e8, "(M^-1)(s^-1)"],
-      "k_off": [200, "s^-1"],
+      "k_off": [300, "s^-1"],
       "k_coop": [5],
       "bin_min": [-10, "nm"],
       "bin_max": [10, "nm"],
@@ -196,31 +223,45 @@
         "Ca_V_leak_factor": [1],
         "Ca_Vmax_up_factor": [1],
         "g_CaL_factor": [1]
-      }
+    }
+  }
+},
+  "growth": {
+    "growth_activation": [false],
+    "start_index": [50000],
+    "moving_average_window": [5000],
+    "driven_signal": ["ATPase"],
+    "concenrtric":{
+      "G_stress_driven":[1e-6],
+      "G_ATPase_driven":[-2]
+    },
+    "eccentric":{
+      "G_number_of_hs":[-3e-6],
+      "G_ATPase_driven":[0]
     }
   },
-  "growth": {
-    "growth_activation": ["False"],
-    "start_index": [100000],
-    "moving_average_window": [5000],
-    "ventricle_wall_volume": [0.03,"liters"],
-    "ventricle_slack_volume": [0.08, "liters"],
-    "driven_signal": ["stress"],
-    "stress_signal":{
-      "concenrtric_growth": {
-        "G_wall_thickness": [1e-6]
+  "profiling":{
+    "profiling_activation":[true]
+  },
+  "saving_to_spreadsheet":{
+    "saving_data_activation":[false],
+    "start_index":[0],
+    "stop_index":[10000]
+  },
+  "multi_threads" :{
+    "multithreading_activation":[false],
+    "parameters_in":{
+      "G_wall_thickness": {
+        "values":[25,50,100,200,300],
+        "param_out":["ventricle_wall_thickness"],
+        "section": ["growth"]
       },
-      "eccentric_growth": {
-        "G_number_of_hs": [-3e-6]
+      "G_number_of_hs": {
+        "values":[25,50,100,200,300],
+        "param_out":["number_of_hs"],
+        "section": ["growth"]
       }
     },
-    "strain_signal":{
-      "concenrtric_growth" :{
-        "Gs_wall_thickness": [0]
-      },
-      "eccentric_growth" :{
-        "Gs_number_of_hs": [-0.1]
-      }
-    }
+    "output_main_folder": ["..\\temp\\demo_1\\demo_i_j\\demo_i_j.json"]
   }
 }

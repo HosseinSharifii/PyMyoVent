@@ -3,8 +3,7 @@ import pandas as pd
 
 class growth():
     """"Class for growth"""
-    from .implement import return_lv_wall_thickness,return_lv_wall_thickness_strain,\
-    return_number_of_hs_strain
+    from .implement import return_lv_wall_thickness
     from .implement import return_number_of_hs,update_data_holder
     from .implement import update_growth
     from .lowpass_filter import lowpass_filter
@@ -40,8 +39,11 @@ class growth():
         #self.tw_rate_control =[]
 
         if self.growth["driven_signal"][0] == "stress":
-            self.G_tw = float(self.growth["stress_signal"]["concenrtric_growth"]["G_wall_thickness"][0])
-
+            self.G_tw = float(self.growth["concenrtric"]["G_stress_driven"][0])
+            self.G_n_hs = float(self.growth["eccentric"]["G_number_of_hs"][0])
+        if self.growth["driven_signal"][0] == "ATPase":
+            self.G_tw = float(self.growth["concenrtric"]["G_ATPase_driven"][0])
+            self.G_n_hs = float(self.growth["eccentric"]["G_ATPase_driven"][0])
         #Eccentric self.growth (number of hs in sereis)
         self.n_of_hs = initial_numbers_of_hs
         self.n_of_hs_array = np.full(self.start_index,self.n_of_hs)
@@ -51,15 +53,13 @@ class growth():
         #self.n_hs_rate_control = []
         self.max_n_hs = 1.5*initial_numbers_of_hs
         self.min_n_hs = 0.8*initial_numbers_of_hs
-        if self.growth["driven_signal"][0] == "stress":
-            self.G_n_hs = float(self.growth["stress_signal"]["eccentric_growth"]["G_number_of_hs"][0])
+#        if self.growth["driven_signal"][0] == "stress":
+        #self.G_n_hs = float(self.growth["eccentric"]["G_number_of_hs"][0])
         #data
         self.data_buffer_size = data_buffer_size
         self.gr_time = 0.0
         self.data_buffer_index = self.start_index
-        self.gr_data = pd.DataFrame({'average_force':
-                                            np.zeros(self.data_buffer_size),
-                                    'ventricle_wall_thickness':
+        self.gr_data = pd.DataFrame({'ventricle_wall_thickness':
                                             np.full(self.data_buffer_size,1000*self.tw),
                                     'number_of_hs':
                                             np.full(self.data_buffer_size,self.n_of_hs)})

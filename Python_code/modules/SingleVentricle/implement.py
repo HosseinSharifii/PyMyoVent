@@ -28,6 +28,10 @@ def implement_time_step(self, time_step, activation,i):
     new_hs_length = 10e9*new_lv_circumference / self.n_hs
     delta_hsl = new_hs_length - self.hs.hs_length
 
+    if self.hs.ATPase_activation:
+
+        self.hs.ATPase = self.hs.myof.return_ATPase(self.ventricle_wall_volume)
+        #self.ATPase = return_ATPase(self)
 #    if self.growth_activation and self.driven_signal == "strain":
 #        self.strain = (new_hs_length - self.slack_hsl)/self.slack_hsl
     # Implements the length change on the half-sarcomere
@@ -105,6 +109,8 @@ def update_data_holders(self, time_step, activation):
             self.volume_perturbation[self.data_buffer_index]
 #    self.data.at[self.data_buffer_index, 'ventricle_wall_thickness'] =\
 #            self.wall_thickness
+    """if self.ATPase_activation:
+        self.data.at[self.data_buffer_index, 'ATPase'] = self.ATPase"""
 
     if self.growth_activation_array[-1]:
 
@@ -272,7 +278,22 @@ def return_regurgitation_volume(self,time_step,v):
     vl[1]=dvl[1]*time_step+self.vl[1]
 
     return vl
+def return_ATPase(self):
 
+    N0 = self.hs.cb_number_density
+    delta_G = self.hs.delta_G
+
+    L0 = 1e-9*self.hs.L0
+    N_A = self.hs.N_A
+
+    fluxes = self.hs.myof.return_fluxes(self.hs.myof.y,self.hs.Ca_conc)
+    J4 = np.sum(fluxes['J4'])
+    # convert liter to meter^3
+    w_vol = self.ventricle_wall_volume*0.001
+
+    ATPase = (N0 * w_vol * delta_G * J4)/(L0 * N_A)
+
+    return ATPase
 def analyze_data(self,data):
     window= 1000
     lv_ED_vol =  \

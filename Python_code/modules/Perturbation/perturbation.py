@@ -34,9 +34,14 @@ class perturbation():
         #ventricle resistance perturbation
         self.ventricle_resistance_perturbation =\
         np.zeros(data_buffer_size+1)
+        #myosim k_1 perturbation
+        self.k_1_perturbation = np.zeros(data_buffer_size+1)
+        #myosim k_2 perturbation
+        self.k_2_perturbation = np.zeros(data_buffer_size+1)
+        #myosim k_4_0 perturbation
+        self.k_4_0_perturbation = np.zeros(data_buffer_size+1)
 
         #blood volume
-
         temp_vol=pert["volume"]
         start_index = int(temp_vol["start_index"][0])
         stop_index = int(temp_vol["stop_index"][0])
@@ -110,3 +115,24 @@ class perturbation():
         increment = float(temp_vtr["increment"][0])
         self.ventricle_resistance_perturbation[(start_index+1):(stop_index+1)]=\
         increment
+
+        #myosim
+        temp_m = pert["myosim"]
+            #k_1
+        temp_k1 = temp_m["k_1"]
+        start_index = int(temp_k1["start_index"][0])
+        stop_index = int(temp_k1["stop_index"][0])
+        increment = float(temp_k1["increment"][0])
+        self.k_1_perturbation[(start_index+1):(stop_index+1)] = increment
+            #k_2
+        temp_k2 = temp_m["k_2"]
+        start_index = int(temp_k2["start_index"][0])
+        stop_index = int(temp_k2["stop_index"][0])
+        increment = float(temp_k2["increment"][0])
+        self.k_2_perturbation[(start_index+1):(stop_index+1)] = increment
+            #k_4_0
+        temp_k4_0 = temp_m["k_4_0"]
+        start_index = int(temp_k4_0["start_index"][0])
+        stop_index = int(temp_k4_0["stop_index"][0])
+        increment = float(temp_k4_0["increment"][0])
+        self.k_4_0_perturbation[(start_index+1):(stop_index+1)] = increment

@@ -1,23 +1,23 @@
 {
   "output_parameters": {
-    "excel_file": ["..\\temp\\demo_2\\demo_2.xlsx"],
-    "input_file": ["..\\temp\\demo_2\\demo_2.json"],
-    "summary_figure": ["..\\temp\\demo_2\\demo_2_summary.png"],
-    "force_length": ["..\\temp\\demo_2\\demo_2_F_L.png"],
-    "pv_figure": ["..\\temp\\demo_2\\demo_2_pv.png"],
-    "baro_figure": ["..\\temp\\demo_2\\demo_2_baro.png"],
-    "flows_figure": ["..\\temp\\demo_2\\demo_2_flows.png"],
-    "hs_fluxes_figure": ["..\\temp\\demo_2\\demo_2_hs_fluxes.png"],
-    "growth_figure": ["..\\temp\\demo_2\\demo_2_growth.png"],
-    "growth_summary": ["..\\temp\\demo_2\\demo_2_growth_sum.png"],
-    "sys_fig": ["..\\temp\\demo_2\\demo_2_sys.png"],
-    "regurg_fig": ["..\\temp\\demo_2\\demo_2_regurg.png"],
-    "active": ["..\\temp\\demo_2\\demo_2_active.png"],
-    "circulatory": ["..\\temp\\demo_2\\demo_2_circulatory.png"],
-    "ventricular": ["..\\temp\\demo_2\\demo_2_vent.png"],
-    "multi_threading":["..\\temp\\demo_2\\demo_2_multi_thread.png"],
-    "ATPase":["..\\temp\\demo_14\\demo_14_ATPase.png"],
-    "Ca":["..\\temp\\demo_2\\demo_2_Ca.png"]
+    "excel_file": ["..//temp//demo_4//demo_4.xlsx"],
+    "input_file": ["..//temp//demo_4//demo_4.json"],
+    "summary_figure": ["..//temp//demo_4//demo_4_summary.png"],
+    "force_length": ["..//temp//demo_4//demo_4_F_L.png"],
+    "pv_figure": ["..//temp//demo_4//demo_4_pv.png"],
+    "baro_figure": ["..//temp//demo_4//demo_4_baro.png"],
+    "flows_figure": ["..//temp//demo_4//demo_4_flows.png"],
+    "hs_fluxes_figure": ["..//temp//demo_4//demo_4_hs_fluxes.png"],
+    "growth_figure": ["..//temp//demo_4//demo_4_growth.png"],
+    "growth_summary": ["..//temp//demo_4//demo_4_growth_sum.png"],
+    "sys_fig": ["..//temp//demo_4//demo_4_sys.png"],
+    "regurg_fig": ["..//temp//demo_4//demo_4_regurg.png"],
+    "active": ["..//temp//demo_4//demo_4_active.png"],
+    "circulatory": ["..//temp//demo_4//demo_4_circulatory.png"],
+    "ventricular": ["..//temp//demo_4//demo_4_vent.png"],
+    "multi_threading":["..//temp//demo_4//demo_4_multi_thread.png"],
+    "ATPase":["..//temp//demo_14//demo_14_ATPase.png"],
+    "Ca":["..//temp//demo_4//demo_4_Ca.png"]
   },
 
   "baroreflex": {
@@ -263,6 +263,6 @@
         "section": ["growth"]
       }
     },
-    "output_main_folder": ["..\\temp\\demo_2\\demo_i_j\\demo_i_j.json"]
+    "output_main_folder": ["..//temp//demo_4//demo_i_j//demo_i_j.json"]
   }
 }

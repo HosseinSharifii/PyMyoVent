@@ -88,14 +88,14 @@ class membranes():
         if (self.kinetic_scheme == "Ten_Tusscher_2004"):
 
             # Ten_Tusscher model assumes time step is in ms
-#            sol = solve_ivp(partial(tt_computeRates_with_activation,
-#                                    constants=self.constants,
-#                                    activation=activation),
-#                            [0, 1000*time_step], self.y,
-#                            method='BDF')
-            sol = solve_ivp(partial(tt_computeRatesonly,constants=self.constants,activation=activation),
+            sol = solve_ivp(partial(tt_computeRates_with_activation,
+                                    constants=self.constants,
+                                    activation=activation),
                             [0, 1000*time_step], self.y,
                             method='BDF')
+#            sol = solve_ivp(partial(tt_computeRatesonly,constants=self.constants,activation=activation),
+#                            [0, 1000*time_step], self.y,
+#                            method='BDF')
             self.y = sol.y[:, -1]
             # Ten_Tusscher model assumese Ca_conc is in mM
 #            self.myofilament_Ca_conc = 0.001*self.y[3]
