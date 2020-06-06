@@ -38,9 +38,3 @@ def growth_driver(self):
 
         print('and ATPase_null of',self.ATPase_null)
         print('***')
-
-
-
-
-
-    #return setpoint

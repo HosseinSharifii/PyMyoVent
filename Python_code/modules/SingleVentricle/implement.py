@@ -8,6 +8,8 @@ def implement_time_step(self, time_step, activation,i):
     """ Steps circulatory system forward in time """
     # Update the half-sarcomere
     self.hs.update_simulation(time_step, 0.0, activation, 1)
+    #sol = solve_ivp(self.derivs, [0, time_step], self.v)
+    #self.v = sol.y[:, -1]
     self.v = evolve_volumes(self, time_step, self.v)
     new_lv_circumference = return_lv_circumference(self,self.v[-1])
 
@@ -64,6 +66,8 @@ def implement_time_step(self, time_step, activation,i):
         self.hs.myof.k_1, self.hs.myof.k_3 =\
         self.syscon.return_contractility(time_step,i)
 
+        #self.resistance[-2] = self.syscon.return_venous_resistance(time_step,i)
+
 def update_data_holders(self, time_step, activation):
 
     # Update data structure for circulation
@@ -81,7 +85,7 @@ def update_data_holders(self, time_step, activation):
     self.data.at[self.data_buffer_index, 'volume_arterioles'] = self.v[2]
     self.data.at[self.data_buffer_index, 'volume_capillaries'] = self.v[3]
     self.data.at[self.data_buffer_index, 'volume_veins'] = self.v[4]
-    self.data.at[self.data_buffer_index, 'volume_ventricle'] = 1000*self.v[-1]
+    self.data.at[self.data_buffer_index, 'volume_ventricle'] = self.v[-1]
 
     #self.vl=return_regurgitation_volume(self,self.v)
 
@@ -98,7 +102,7 @@ def update_data_holders(self, time_step, activation):
         flows['aorta_to_arteries']
     self.data.at[self.data_buffer_index, 'flow_arteries_to_arterioles'] = \
         flows['arteries_to_arterioles']
-    self.data.at[self.data_buffer_index,'flow_arterioles_to_capilllaries'] = \
+    self.data.at[self.data_buffer_index,'flow_arterioles_to_capillaries'] = \
         flows['arterioles_to_capillaries']
     self.data.at[self.data_buffer_index, 'flow_capillaries_to_veins'] = \
         flows['capillaries_to_veins']
@@ -107,24 +111,16 @@ def update_data_holders(self, time_step, activation):
     if self.pert_activation:
         self.data.at[self.data_buffer_index, 'volume_perturbation'] = \
             self.volume_perturbation[self.data_buffer_index]
-#    self.data.at[self.data_buffer_index, 'ventricle_wall_thickness'] =\
-#            self.wall_thickness
-    """if self.ATPase_activation:
-        self.data.at[self.data_buffer_index, 'ATPase'] = self.ATPase"""
 
     if self.growth_activation_array[-1]:
 
+        # 1000 is for coverting liter to mili liter
         self.data.at[self.data_buffer_index, 'ventricle_wall_volume'] =\
             1000*self.ventricle_wall_volume
         self.data.at[self.data_buffer_index, 'ventricle_wall_mass'] =\
             self.lv_mass
         self.data.at[self.data_buffer_index, 'ventricle_wall_mass_i'] =\
             self.lv_mass_indexed
-#        if self.driven_signal == "strain":
-#            self.data.at[self.data_buffer_index, 'cell_strain'] = self.strain
-
-#        if self.driven_signal == "strain":
-#            self.data.at[self.data_buffer_index, 'cell_strain'] = self.strain
 
     # Now update data structure for half_sarcomere
     self.hs.update_data_holder(time_step, activation)
@@ -134,6 +130,7 @@ def update_data_holders(self, time_step, activation):
 
     if self.growth_activation:
         self.gr.update_data_holder(time_step)
+
 
 def evolve_volumes(self,time_step,v):
 
@@ -165,7 +162,7 @@ def return_flows(self, v):
     for x in vi:
         p[x] = v[x] / self.compliance[x]
 
-    p[-1] = return_lv_pressure(self, self.v[-1])
+    p[-1] = return_lv_pressure(self, v[-1])
 
     flows = dict()
 
@@ -224,7 +221,18 @@ def return_lv_circumference(self, lv_volume):
 def return_lv_pressure(self,lv_volume):
 
     # Estimate the force produced at the new length
-    total_force = self.hs.myof.total_force
+    new_lv_circumference = return_lv_circumference(self,lv_volume)
+
+    # Deduce relative change in hsl
+    #delta_hsl = self.hs.hs_length * \
+    #        ((new_lv_circumference / self.lv_circumference) - 1.0)
+    new_hs_length = 10e9*new_lv_circumference / self.n_hs
+    delta_hsl = new_hs_length - self.hs.hs_length
+
+    # Estimate the force produced at the new length
+    f = self.hs.myof.check_myofilament_forces(delta_hsl)
+    total_force = f['total_force']
+
 
     internal_r = np.power((3.0 * 0.001 * lv_volume) /(2.0 * np.pi), (1.0 / 3.0))
 
@@ -278,6 +286,7 @@ def return_regurgitation_volume(self,time_step,v):
     vl[1]=dvl[1]*time_step+self.vl[1]
 
     return vl
+
 def return_ATPase(self):
 
     N0 = self.hs.cb_number_density
@@ -294,6 +303,7 @@ def return_ATPase(self):
     ATPase = (N0 * w_vol * delta_G * J4)/(L0 * N_A)
 
     return ATPase
+
 def analyze_data(self,data):
     window= 1000
     lv_ED_vol =  \

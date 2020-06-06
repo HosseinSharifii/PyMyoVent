@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 
 class perturbation():
-    #from implement import xx
 
     def __init__(self,pert_params,data_buffer_size):
 

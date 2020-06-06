@@ -253,7 +253,7 @@ def initConsts_with_adjustments(membrane_factors):
     states[1] = 146.38#138.3
     states[2] = 3.75
     constants[12] = 2
-    states[3] = 0.0002
+    states[3] = 0.0002#0.0007
     constants[13] = 5.405
     constants[14] = membrane_factors['g_Kr'] * 0.096
     states[4] = 0
@@ -285,7 +285,7 @@ def initConsts_with_adjustments(membrane_factors):
     constants[30] = 0.825
     constants[31] = 0.0005
     constants[32] = 0.0146
-    states[15] = 0.16#0.2
+    states[15] = 0.21
     states[16] = 1
     constants[33] = 2
     constants[34] = membrane_factors['Ca_a_rel'] * 0.016464

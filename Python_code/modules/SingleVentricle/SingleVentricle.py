@@ -1,3 +1,5 @@
+import sys
+import os
 import numpy as np
 import pandas as pd
 import cProfile
@@ -11,14 +13,13 @@ from scipy.constants import mmHg as mmHg_in_pascals
 from modules.MyoSim.half_sarcomere import half_sarcomere as hs
 from modules.SystemControl import system_control as syscon
 from modules.Perturbation import perturbation as pert
+from modules.Growth import growth as gr
 
 class single_circulation():
     """Class for a single ventricle circulation"""
     from .implement import implement_time_step, update_data_holders,analyze_data
     from .display import display_simulation, display_flows, display_pv_loop
-    from .display import display_baro_results,display_growth
-    from .display import display_systolic_function
-    from .display import display_ventricular_dimensions
+
     def __init__(self, single_circulation_simulation, xml_file_string=None):
 
         from .implement import return_lv_circumference,return_lv_pressure, return_ATPase
@@ -180,7 +181,7 @@ class single_circulation():
             #self.growth_switch = True
 
         # Baro
-        self.syscon=syscon.system_control(self.baro_params,hs_params,
+        self.syscon=syscon.system_control(self.baro_params,hs_params,circ_params,
                                     self.output_buffer_size)
 
         print("hsl: %f" % self.hs.hs_length)
@@ -283,7 +284,7 @@ class single_circulation():
         self.data.at[0, 'volume_arterioles'] = self.v[2]
         self.data.at[0, 'volume_capillaries'] = self.v[3]
         self.data.at[0, 'volume_veins'] = self.v[4]
-        self.data.at[0, 'volume_ventricle'] = 1000*self.v[-1]
+        self.data.at[0, 'volume_ventricle'] = self.v[-1]
 
         self.data.at[0, 'volume_aortic_regurgitation'] = self.vl[0]
         self.data.at[0, 'volume_mitral_regurgitation'] = self.vl[1]
@@ -299,10 +300,7 @@ class single_circulation():
         # Run the simulation
         from .implement import implement_time_step, update_data_holders,analyze_data
         from .display import display_simulation, display_flows, display_pv_loop
-        from .display import display_baro_results,display_growth,display_growth_summary
-        from .display import display_systolic_function
-        from .display import display_ventricular_dimensions
-        from .display import display_ATPase
+        from .display import display_Ca,display_pres,display_simulation_publish
 
         # Set up some values for the simulation
         no_of_time_points = \
@@ -383,39 +381,49 @@ class single_circulation():
             pr.print_stats()
         # Make plots
         # Circulation
-
         display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0])
+                           self.output_parameters["summary_figure"][0],[41.4,43.4])#,[81.6,82.6])
+        #display_simulation_publish(self.data,
+        #                   self.output_parameters["summary_figure"][0],[8.4,9.4])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
-                        self.output_parameters["pv_figure"][0])
+                        self.output_parameters["pv_figure"][0],[41.4,42.4])
+        display_pres(self.data,
+                    self.output_parameters["pres"][0],[41.4,43.4])
+        syscon.system_control.display_arterial_pressure(self.data,
+                        self.output_parameters["arterial"][0])
+
         if self.baro_scheme !="fixed_heart_rate":
-            display_baro_results(self.data,
+            syscon.system_control.display_baro_results(self.data,
                             self.output_parameters["baro_figure"][0])
 
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
                                self.output_parameters["hs_fluxes_figure"][0])
-#        display_Ca(self.data,self.output_parameters["Ca"][0],[5,10])
+    #    display_Ca(self.data,self.output_parameters["Ca"][0])
+
         #Growth
         if self.growth_activation:
-            display_growth(self.data,
-            self.output_parameters["growth_figure"][0],self.driven_signal)
-
-            display_growth_summary(self.data,
-            self.output_parameters["growth_summary"][0],self.driven_signal)
 
             self.data = analyze_data(self,self.data)
 
-            display_ventricular_dimensions(self.data,
+            gr.growth.display_growth(self.data,
+            self.output_parameters["growth_figure"][0],self.driven_signal)
+
+            gr.growth.display_growth_summary(self.data,
+            self.output_parameters["growth_summary"][0],self.driven_signal)
+
+
+
+            gr.growth.display_ventricular_dimensions(self.data,
             self.output_parameters["ventricular"][0])
 
-            display_systolic_function(self.data,
+            gr.growth.display_systolic_function(self.data,
                     self.output_parameters["sys_fig"][0])
 
         if self.hs.ATPase_activation:
-            display_ATPase(self.data,self.output_parameters["ATPase"][0])
+            gr.growth.display_ATPase(self.data,self.output_parameters["ATPase"][0])
 #        display_regurgitation(self.data,
 #                self.output_parameters["regurg_fig"][0])
         if self.saving_data_activation:
@@ -426,55 +434,6 @@ class single_circulation():
 
             append_df_to_excel(self.output_parameters['excel_file'][0],data_to_be_saved,
                            sheet_name='Data',startrow=0)
-
-        if "data_file" in  self.output_parameters.values():
-        #if not (self.output_parameters["data_file"]):
-            # Write data to disk
-            # Read xml input as a string
-            wb = Workbook()
-            ws_parameters = wb.active
-            ws_parameters.title = 'Simulation parameters'
-
-            tree = etree.parse(self.input_xml_file_string)
-            root = tree.getroot()
-
-            def build_xml_string(input_object, current_string, indent):
-
-                def indent_string(indent):
-                    ind_string = ""
-                    for i in np.arange(0,indent):
-                        ind_string = ("%s    " % ind_string)
-                    return ind_string
-
-                for child in input_object:
-                    current_string = ("%s\n%s<%s>" %
-                                      (current_string, indent_string(indent), child.tag))
-                    if (len(list(child))>0):
-                        current_string = build_xml_string(child, current_string, indent+1)
-                    else:
-                        current_string = ("%s%s%s" %
-                                         (current_string, indent_string(0), child.text))
-                    if (len(list(child))==0):
-                        current_string = ("%s%s</%s>" %
-                                          (current_string, indent_string(0), child.tag))
-                    else:
-                        current_string = ("%s\n%s</%s>" %
-                                          (current_string, indent_string(indent), child.tag))
-                return current_string
-
-            xml_string = build_xml_string(root,"",0)
-
-
-            if (self.input_xml_file_string):
-                f = open(self.input_xml_file_string, mode='r')
-                input_xml = f.read()
-                f.close
-                ws_parameters['A1'] = input_xml
-            wb.save(self.output_parameters.data_file.cdata)
-
-            # Append data as a new sheet
-            append_df_to_excel(self.output_parameters.data_file.cdata,self.data,
-                               sheet_name='Data')
 
 def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None,
                        truncate_sheet=False,
@@ -545,6 +504,7 @@ def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None,
         startrow = 0
 
     # write out the new sheet
+
     df.to_excel(writer, sheet_name, startrow=startrow, **to_excel_kwargs)
 
     # save the workbook

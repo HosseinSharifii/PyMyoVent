@@ -8,14 +8,6 @@ def update_growth(self,time_step):
     self.wall_thickness = return_lv_wall_thickness(self,time_step)
     self.number_of_hs = return_number_of_hs(self,time_step)
 
-
-
-    """if self.growth["driven_signal"][0] == "stress":
-        self.wall_thickness = return_lv_wall_thickness(self,time_step)
-        self.number_of_hs = return_number_of_hs(self,time_step)
-    if self.growth["driven_signal"][0] == "strain":
-        self.wall_thickness = return_lv_wall_thickness_strain(self,time_step)
-        self.number_of_hs = return_number_of_hs_strain(self,time_step)"""
 # stress driven growth
 def return_lv_wall_thickness(self,time_step):
 
@@ -97,9 +89,12 @@ def update_data_holder(self,time_step):
     self.gr_time = self.gr_time + time_step
     self.data_buffer_index += 1
     self.gr_data.at[self.data_buffer_index,'pas_force_null'] = self.passive_stress_null
+
     if self.growth["driven_signal"][0] == "stress":
         self.gr_data.at[self.data_buffer_index,'cb_force_null'] = self.cb_stress_null
+
     if self.growth["driven_signal"][0] == "ATPase":
         self.gr_data.at[self.data_buffer_index,'ATPase_null'] = self.ATPase_null
+    # 1000 is to convert liter to mili liter
     self.gr_data.at[self.data_buffer_index, 'ventricle_wall_thickness'] = 1000*self.wall_thickness
     self.gr_data.at[self.data_buffer_index, 'number_of_hs'] = self.number_of_hs
