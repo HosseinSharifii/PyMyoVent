@@ -382,15 +382,15 @@ class single_circulation():
         # Make plots
         # Circulation
         display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0],[41.4,43.4])#,[81.6,82.6])
+                           self.output_parameters["summary_figure"][0])#,[81.6,82.6])
         #display_simulation_publish(self.data,
         #                   self.output_parameters["summary_figure"][0],[8.4,9.4])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
-                        self.output_parameters["pv_figure"][0],[41.4,42.4])
+                        self.output_parameters["pv_figure"][0])
         display_pres(self.data,
-                    self.output_parameters["pres"][0],[41.4,43.4])
+                    self.output_parameters["pres"][0])
         syscon.system_control.display_arterial_pressure(self.data,
                         self.output_parameters["arterial"][0])
 
