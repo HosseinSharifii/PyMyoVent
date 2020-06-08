@@ -6,8 +6,8 @@ PyMyoVent simulates a single ventricle pumping blood around a closed circulation
   + Python
   + Required libraries
     + Numpy
-    + Scipy
-    + Pandas
+    + SciPy
+    + pandas
     + matplotlib
     + json
     + nested_lookup
