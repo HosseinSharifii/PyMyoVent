@@ -508,6 +508,27 @@ def display_N_overlap(data_structure, output_file_string="", t_limits=[],
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)
 
+def display_r4(data_structure, output_file_string="", t_limits=[],
+                       dpi=None):
+    no_of_rows = 1
+    no_of_cols = 1
+
+    f = plt.figure(constrained_layout=True)
+    f.set_size_inches([5, 3])
+    spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
+                              figure=f)
+
+    ax0 = f.add_subplot(spec2[0, 0])
+    ax0.plot('time', 'r4', data=data_structure, label='r4')
+    if t_limits:
+        ax0.set_xlim(t_limits)
+    ax0.set_ylabel('detachment rate factor', fontsize = 10)
+    ax0.set_xlabel('time (s)', fontsize = 10)
+    ax0.tick_params(labelsize = 10)
+
+    if (output_file_string):
+        save_figure_to_file(f, output_file_string, dpi)
+
 def save_figure_to_file(f, im_file_string, dpi=None, verbose=1):
     # Writes an image to file
 

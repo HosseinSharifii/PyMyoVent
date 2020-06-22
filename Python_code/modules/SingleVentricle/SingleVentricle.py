@@ -306,7 +306,7 @@ class single_circulation():
         # Run the simulation
         from .implement import implement_time_step, update_data_holders,analyze_data
         from .display import display_simulation, display_flows, display_pv_loop,display_N_overlap
-        from .display import display_Ca,display_pres,display_simulation_publish,display_active_force
+        from .display import display_Ca,display_pres,display_simulation_publish,display_active_force,display_r4
 
         # Set up some values for the simulation
         no_of_time_points = \
@@ -394,17 +394,18 @@ class single_circulation():
         # Make plots
         # Circulation
         display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0],[75,120])#,[81.6,82.6])
+                           self.output_parameters["summary_figure"][0])#,[75,120])#,[81.6,82.6])
 
         #display_simulation_publish(self.data,
         #                   self.output_parameters["summary_figure"][0],[8.4,9.4])
         display_N_overlap(self.data,self.output_parameters["N_overlap"][0] )
+        display_r4(self.data,self.output_parameters["r4"][0])
         display_active_force(self.data,
-                            self.output_parameters["active"][0],[75,120])
+                            self.output_parameters["active"][0])#,[75,120])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
-                        self.output_parameters["pv_figure"][0],[[10,11],[15,16]])
+                        self.output_parameters["pv_figure"][0])
         display_pres(self.data,
                     self.output_parameters["pres"][0],[38.4,39.4])
         syscon.system_control.display_arterial_pressure(self.data,
@@ -417,7 +418,7 @@ class single_circulation():
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
                                self.output_parameters["hs_fluxes_figure"][0])#,[30,60])
-        display_Ca(self.data,self.output_parameters["Ca"][0],[75,120])
+        display_Ca(self.data,self.output_parameters["Ca"][0])#,[75,120])
 
         #Growth
         if self.growth_activation:

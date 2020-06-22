@@ -20,7 +20,8 @@
     "Ca":["..\\temp\\demo_2\\demo_2_Ca.png"],
     "arterial": ["..\\temp\\demo_2\\demo_2_arterial.png"],
     "pres": ["..\\temp\\demo_2\\demo_2_pres.png"],
-    "N_overlap": ["..\\temp\\demo_2\\demo_2_N_over.png"]
+    "N_overlap": ["..\\temp\\demo_2\\demo_2_N_over.png"],
+    "r4":["..\\temp\\demo_2\\demo_2_r4.png"]
   },
 
   "baroreflex": {
@@ -35,7 +36,7 @@
     },
     "simple_baroreceptor":{
       "simulation":{
-        "no_of_time_points": [20000],
+        "no_of_time_points": [10000],
         "time_step": [0.001],
         "duty_ratio": [0.003],
         "basal_heart_period": [1,"s"]
@@ -48,27 +49,27 @@
       },
       "regulation":{
         "heart_period":{
-          "G_T": [0.03],
+          "G_T": [0.0],
           "D_T": [1,"s"],
           "tau_T": [1,"s"]
         },
         "k_1":{
-          "G_k1": [-0.03],
+          "G_k1": [-0.0],
           "D_k1": [1,"s"],
           "tau_k1": [1,"s"]
         },
         "k_3":{
-          "G_k3": [-0.03],
+          "G_k3": [-0.0],
           "D_k3": [1,"s"],
           "tau_k3": [1,"s"]
         },
         "ca_uptake":{
-          "G_up": [-0.02],
+          "G_up": [-0.0],
           "D_up": [1,"s"],
           "tau_up": [1,"s"]
         },
         "g_cal":{
-          "G_gcal": [-0.04],
+          "G_gcal": [-0.0],
           "D_gcal": [1,"s"],
           "tau_G_gcal": [1,"s"]
         },
@@ -276,7 +277,7 @@
     }
   },
   "profiling":{
-    "profiling_activation":[false]
+    "profiling_activation":[true]
   },
   "saving_to_spreadsheet":{
     "saving_data_activation":[false],

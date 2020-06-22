@@ -20,8 +20,7 @@
     "Ca":["..\\temp\\demo_2\\demo_2_Ca.png"],
     "arterial": ["..\\temp\\demo_2\\demo_2_arterial.png"],
     "pres": ["..\\temp\\demo_2\\demo_2_pres.png"],
-    "N_overlap": ["..\\temp\\demo_2\\demo_2_N_over.png"],
-    "r4":["..\\temp\\demo_2\\demo_2_r4.png"]
+    "N_overlap": ["..\\temp\\demo_2\\demo_2_N_over.png"]
   },
 
   "baroreflex": {
@@ -49,27 +48,27 @@
       },
       "regulation":{
         "heart_period":{
-          "G_T": [0.0],
+          "G_T": [0.03],
           "D_T": [1,"s"],
           "tau_T": [1,"s"]
         },
         "k_1":{
-          "G_k1": [-0.0],
+          "G_k1": [-0.03],
           "D_k1": [1,"s"],
           "tau_k1": [1,"s"]
         },
         "k_3":{
-          "G_k3": [-0.0],
+          "G_k3": [-0.03],
           "D_k3": [1,"s"],
           "tau_k3": [1,"s"]
         },
         "ca_uptake":{
-          "G_up": [-0.0],
+          "G_up": [-0.02],
           "D_up": [1,"s"],
           "tau_up": [1,"s"]
         },
         "g_cal":{
-          "G_gcal": [-0.0],
+          "G_gcal": [-0.04],
           "D_gcal": [1,"s"],
           "tau_G_gcal": [1,"s"]
         },
