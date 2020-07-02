@@ -63,14 +63,23 @@ def return_heart_period_control(self,time_step,i):
 
     if (self.baro_scheme == "simple_baroreceptor"):
         #time delay
-        if i < self.D_T:
+        """if i < self.D_T:
             delay_T = int(0)
         else:
             delay_T = self.D_T
         T_prime_0 = self.T_prime
         dTdt=self.G_T*(self.bc[i-delay_T]-self.bc_mid)*self.T0
         T_prime=dTdt*time_step+T_prime_0
+        self.T_prime = T_prime"""
+
+        T_prime_0 = self.T_prime
+        self.T_rate_array = np.roll(self.T_rate_array,-1)
+        dTdt_0 = self.G_T*(self.bc[i]-self.bc_mid)*self.T0
+        self.T_rate_array[-1] = dTdt_0
+        dTdt = np.mean(self.T_rate_array)
+        T_prime=dTdt*time_step+T_prime_0
         self.T_prime = T_prime
+
         #implement minimum range of heart period for human
         if self.T_prime <= 0.4:
             self.T_prime = 0.4
@@ -121,7 +130,7 @@ def return_contractility(self,time_step,i):
 
     if (self.baro_scheme == "simple_baroreceptor"):
         #time delay
-        if i < self.D_k1:
+        """if i < self.D_k1:
             delay_k1 = int(0)
         else:
             delay_k1 = self.D_k1
@@ -139,25 +148,57 @@ def return_contractility(self,time_step,i):
         if i < self.D_gcal:
             delay_gcal = int(0)
         else:
-            delay_gcal = self.D_gcal
+            delay_gcal = self.D_gcal"""
+
+        """k1_0 = self.k1
+        dk1dt = self.G_k1*(self.bc[i-delay_k1]-self.bc_mid)*self.k1_0
+        k1 = dk1dt*time_step+k1_0
+        self.k1 = k1"""
 
         k1_0 = self.k1
-        dk1dt = self.G_k1*(self.bc[i-delay_k1]-self.bc_mid)*self.k1_0
+        self.k1_rate_array = np.roll(self.k1_rate_array,-1)
+        dk1dt_0 = self.G_k1*(self.bc[i]-self.bc_mid)*self.k1_0
+        self.k1_rate_array[-1] = dk1dt_0
+        dk1dt = np.mean(self.k1_rate_array)
         k1 = dk1dt*time_step+k1_0
         self.k1 = k1
 
-        k3_0 = self.k3
+        """k3_0 = self.k3
         dk3dt = self.G_k3*(self.bc[i-delay_k3]-self.bc_mid)*self.k3_0
         k3 = dk3dt*time_step + k3_0
+        self.k3 = k3"""
+
+        k3_0 = self.k3
+        self.k3_rate_array = np.roll(self.k3_rate_array,-1)
+        dk3dt_0 = self.G_k3*(self.bc[i]-self.bc_mid)*self.k3_0
+        self.k3_rate_array[-1] = dk3dt_0
+        dk3dt = np.mean(self.k3_rate_array)
+        k3 = dk3dt*time_step+k3_0
         self.k3 = k3
 
-        ca_up_0 = self.ca_uptake
+        """ca_up_0 = self.ca_uptake
         dupdt = self.G_up*(self.bc[i-delay_ca_uptake]-self.bc_mid)*self.ca_uptake_0
+        ca_uptake = dupdt*time_step+ca_up_0
+        self.ca_uptake = ca_uptake"""
+
+        ca_up_0 = self.ca_uptake
+        self.ca_uptake_rate_array = np.roll(self.ca_uptake_rate_array,-1)
+        dupdt_0 = self.G_up*(self.bc[i]-self.bc_mid)*self.ca_uptake_0
+        self.ca_uptake_rate_array[-1] = dupdt_0
+        dupdt = np.mean(self.ca_uptake_rate_array)
         ca_uptake = dupdt*time_step+ca_up_0
         self.ca_uptake = ca_uptake
 
-        gcal_0 = self.g_cal
+        """gcal_0 = self.g_cal
         dgcaldt = self.G_gcal*(self.bc[i-delay_gcal]-self.bc_mid)*self.g_cal_0
+        g_cal = dgcaldt*time_step+gcal_0
+        self.g_cal = g_cal"""
+
+        gcal_0 = self.g_cal
+        self.g_cal_rate_array = np.roll(self.g_cal_rate_array,-1)
+        dgcaldt_0 = self.G_gcal*(self.bc[i]-self.bc_mid)*self.g_cal_0
+        self.g_cal_rate_array[-1] = dgcaldt_0
+        dgcaldt = np.mean(self.g_cal_rate_array)
         g_cal = dgcaldt*time_step+gcal_0
         self.g_cal = g_cal
 
@@ -246,8 +287,8 @@ def update_data_holder(self,time_step):
         if (self.baro_scheme == "simple_baroreceptor"):
             self.sys_data.at[self.data_buffer_index, 'baroreceptor_output']\
              = self.bc[-1]
-            self.sys_data.at[self.data_buffer_index, 'venous_resistance']=\
-                self.Rv
+#            self.sys_data.at[self.data_buffer_index, 'venous_resistance']=\
+#                self.Rv
         if (self.baro_scheme == "Ursino_1998"):
             self.sys_data.at[self.data_buffer_index, 'P_tilda'] = self.P_tilda
             self.sys_data.at[self.data_buffer_index, 'f_cs'] = self.f_cs

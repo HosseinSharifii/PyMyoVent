@@ -28,7 +28,7 @@ class system_control():
                 int(temp["simulation"]["no_of_time_points"][0])
             self.activation_frequency = float(1/self.T)
             self.t = self.dt*np.arange(1, self.no_of_time_points+1)
-
+            self.start_index = 0
             self.predefined_activation_level =\
                 0.5*(1+signal.square(np.pi+2*np.pi*self.activation_frequency*self.t,
                 duty=self.activation_duty_ratio))
@@ -43,6 +43,9 @@ class system_control():
             self.activation_duty_ratio = \
             float(temp["simulation"]["duty_ratio"][0])
             self.dt = float(temp["simulation"]["time_step"][0])
+            self.start_index = int(temp["simulation"]["start_index"][0])
+            memory_in_seconds = int(temp["simulation"]["memory"][0])
+            memory = int(memory_in_seconds/self.dt)
             #Activation function
             self.T_systole = self.activation_duty_ratio * self.T
             self.T_diastole = self.T-self.T_systole
@@ -55,7 +58,7 @@ class system_control():
             self.activation_level = 0.0
 
             # afferent pathway (baroreceptor control)
-            self.bc = np.array([])
+            self.bc = np.zeros(self.start_index)
             self.bc_max = float(temp["afferent"]["bc_max"][0])
             self.bc_min =  float(temp["afferent"]["bc_min"][0])
             self.bc_mid = float((self.bc_max+self.bc_min)/2)
@@ -66,47 +69,29 @@ class system_control():
                 #heart period
             self.T_prime = self.T
             self.T0 = self.T
-            self.delta_T_prime = [0.0]
             self.G_T = float(temp["regulation"]["heart_period"]["G_T"][0])
-            D_T_in_second = float(temp["regulation"]["heart_period"]["D_T"][0])
-            self.D_T = int(D_T_in_second / self.dt)
-            self.tau_T = float(temp["regulation"]["heart_period"]["tau_T"][0])
+            self.T_rate_array = np.zeros(memory)
                 #contractility
                     #k_1
             self.k1 = float(hs_params["myofilaments"]["k_1"][0]) #float(temp["regulation"]["k_1"]["k1"][0])
             self.k1_0 = self.k1
             self.G_k1 = float(temp["regulation"]["k_1"]["G_k1"][0])
-            D_k1_in_second = float(temp["regulation"]["k_1"]["D_k1"][0])
-            self.D_k1 = int(D_k1_in_second / self.dt)
-            self.tau_k1 = float(temp["regulation"]["k_1"]["tau_k1"][0])
-            self.delta_k1=0.0
+            self.k1_rate_array = np.zeros(memory)
                     #k_3
             self.k3 = float(hs_params["myofilaments"]["k_3"][0])#float(temp["regulation"]["k_3"]["k3"][0])
             self.k3_0 = self.k3
             self.G_k3 = float(temp["regulation"]["k_3"]["G_k3"][0])
-            D_k3_in_second = float(temp["regulation"]["k_3"]["D_k3"][0])
-            self.D_k3 = int(D_k3_in_second / self.dt)
-            self.tau_k3 = float(temp["regulation"]["k_3"]["tau_k3"][0])
-            self.delta_k3 = 0.0
+            self.k3_rate_array = np.zeros(memory)
                     #ca_uptake
             self.ca_uptake = float(hs_params["membranes"]["Ten_Tusscher_2004"]["Ca_Vmax_up_factor"][0])
             self.ca_uptake_0 = self.ca_uptake
             self.G_up = float(temp["regulation"]["ca_uptake"]["G_up"][0])
-            D_ca_uptake_in_second = float(temp["regulation"]["ca_uptake"]["D_up"][0])
-            self.D_ca_uptake = int(D_ca_uptake_in_second/self.dt)
+            self.ca_uptake_rate_array = np.zeros(memory)
                     #g_cal
             self.g_cal = float(hs_params["membranes"]["Ten_Tusscher_2004"]["g_CaL_factor"][0])
             self.g_cal_0 = self.g_cal
             self.G_gcal = float(temp["regulation"]["g_cal"]["G_gcal"][0])
-            D_gcal_in_second = float(temp["regulation"]["g_cal"]["D_gcal"][0])
-            self.D_gcal = int(D_gcal_in_second/self.dt)
-
-                    #Venous resistance
-            self.Rv = float(circ_params["veins"]["resistance"][0])#float(temp["regulation"]["k_3"]["k3"][0])
-            self.Rv_0 = self.Rv
-            self.G_Rv = float(temp["regulation"]["Rv"]["G_Rv"][0])
-            D_Rv_in_second = float(temp["regulation"]["Rv"]["D_Rv"][0])
-            self.D_Rv = int(D_Rv_in_second / self.dt)
+            self.g_cal_rate_array = np.zeros(memory)
 
         if (self.baro_scheme == "Ursino_1998"):
 
@@ -182,32 +167,35 @@ class system_control():
             # data
         self.data_buffer_size = data_buffer_size
         self.sys_time = 0.0
-        self.data_buffer_index = 0
+        self.data_buffer_index = self.start_index
         self.sys_data = pd.DataFrame({'heart_period':
-                                            np.zeros(self.data_buffer_size)})
-        self.sys_data.at[0, 'heart_period'] = self.T
-        self.sys_data.at[0, 'heart_rate'] = 60/self.T
+                                            np.full(self.data_buffer_size,self.T),
+                                            'heart_rate':
+                                            np.full(self.data_buffer_size,60/self.T)})
+#        self.sys_data.at[0, 'heart_period'] = self.T
+#        self.sys_data.at[0, 'heart_rate'] = 60/self.T
 
         if (self.baro_scheme !="fixed_heart_rate"):
 
-            self.sys_data['k_1'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.sys_data['k_3'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.sys_data['Ca_Vmax_up_factor'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.sys_data['g_CaL_factor'] = pd.Series(np.zeros(self.data_buffer_size))
+            self.sys_data['k_1'] = pd.Series(np.full(self.data_buffer_size,self.k1))
+            self.sys_data['k_3'] = pd.Series(np.full(self.data_buffer_size,self.k3))
+            self.sys_data['Ca_Vmax_up_factor'] = \
+                pd.Series(np.full(self.data_buffer_size,self.ca_uptake))
+            self.sys_data['g_CaL_factor'] = pd.Series(np.full(self.data_buffer_size,self.g_cal))
 
 
-            self.sys_data.at[0, 'k_1'] = self.k1
+            """self.sys_data.at[0, 'k_1'] = self.k1
             self.sys_data.at[0, 'k_3'] = self.k3
             self.sys_data.at[0, 'Ca_Vmax_up_factor'] = self.ca_uptake
-            self.sys_data.at[0, 'g_CaL_factor'] = self.g_cal
+            self.sys_data.at[0, 'g_CaL_factor'] = self.g_cal"""
         # Add in specific fields for each scheme
         if self.baro_scheme == "simple_baroreceptor":
 
             self.sys_data['baroreceptor_output'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.sys_data['venous_resistance'] = pd.Series(np.zeros(self.data_buffer_size))
+    #        self.sys_data['venous_resistance'] = pd.Series(np.zeros(self.data_buffer_size))
             # initial values
             self.sys_data.at[0, 'baroreceptor_output'] = 0
-            self.sys_data.at[0, 'venous_resistance'] = self.Rv
+    #        self.sys_data.at[0, 'venous_resistance'] = self.Rv
         if self.baro_scheme == "Ursino_1998":
 
             self.sys_data['P_tilda'] = pd.Series(np.zeros(self.data_buffer_size))

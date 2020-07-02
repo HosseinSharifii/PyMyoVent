@@ -62,7 +62,9 @@ def update_data_holder(self, dt, activation):
         self.hs_data.at[self.data_buffer_index, 'Joff'] = fluxes['Joff']
 
         self.hs_data.at[self.data_buffer_index, 'N_overlap'] = self.myof.n_overlap
-        self.hs_data.at[self.data_buffer_index, 'r4'] = self.myof.r4
+
+
+
         if self.ATPase_activation:
             self.hs_data.at[self.data_buffer_index, 'ATPase'] = self.ATPase
 

@@ -189,6 +189,12 @@ class single_circulation():
         # Baro
         self.syscon=syscon.system_control(self.baro_params,hs_params,circ_params,
                                     self.output_buffer_size)
+        self.baro_activation_array = np.full(self.output_buffer_size+1,False)
+        if self.baro_scheme == "simple_baroreceptor":
+            start_index = \
+                int(self.baro_params[self.baro_scheme]["simulation"]["start_index"][0])
+            self.baro_activation_array[start_index:]=True
+        self.baro_activation = self.baro_activation_array[0]
 
         print("hsl: %f" % self.hs.hs_length)
         print("slack hsl: %f" % self.slack_hsl)
@@ -364,11 +370,13 @@ class single_circulation():
                             self.hs.membr.g_CaL_factor + self.g_cal_perturbation[i]
             # Apply growth activation
             self.growth_activation = self.growth_activation_array[i]
+            # Apply baro activation
+            self.baro_activation = self.baro_activation_array[i]
             # Apply heart rate activation
             activation_level=self.syscon.return_activation()
 
             # Display
-            if ( (i % 200) == 0):
+            if ( (i % 2000) == 0):
                 print("Blood volume: %.3g, %.0f %% complete" %
                       (np.sum(self.v), (100*i/np.size(t))))
 
@@ -393,32 +401,35 @@ class single_circulation():
             pr.print_stats()
         # Make plots
         # Circulation
-        display_simulation(self.data,
-                           self.output_parameters["summary_figure"][0])#,[75,120])#,[81.6,82.6])
+        #display_simulation(self.data,
+        #                   self.output_parameters["summary_figure"][0])#,[75,120])#,[81.6,82.6])
 
-        #display_simulation_publish(self.data,
-        #                   self.output_parameters["summary_figure"][0],[8.4,9.4])
-        display_N_overlap(self.data,self.output_parameters["N_overlap"][0] )
-        display_r4(self.data,self.output_parameters["r4"][0])
-        display_active_force(self.data,
-                            self.output_parameters["active"][0])#,[75,120])
+        display_simulation_publish(self.data,
+                           self.output_parameters["summary_figure"][0])
+        #display_N_overlap(self.data,self.output_parameters["N_overlap"][0] )
+        #display_r4(self.hs.myof.x,self.hs.myof.r4,self.output_parameters["r4"][0])
+#        display_active_force(self.data,
+#                            self.output_parameters["active"][0])#,[75,120])
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
-                        self.output_parameters["pv_figure"][0])
-        display_pres(self.data,
-                    self.output_parameters["pres"][0],[38.4,39.4])
-        syscon.system_control.display_arterial_pressure(self.data,
-                        self.output_parameters["arterial"][0])
+                        self.output_parameters["pv_figure"][0],[[78.5,79.8],[142.8,143.8]])
+        #display_pv_loop(self.data,
+        #                self.output_parameters["pv_figure"][0],[[1.2,2.2],[4.8,5.8]])
+#        display_pres(self.data,
+#                    self.output_parameters["pres"][0],[38.4,39.4])
+#        syscon.system_control.display_arterial_pressure(self.data,
+#                        self.output_parameters["circulatory"][0])
 
-        if self.baro_scheme !="fixed_heart_rate":
+        #if self.baro_scheme !="fixed_heart_rate":
+        if self.baro_activation:
             syscon.system_control.display_baro_results(self.data,
                             self.output_parameters["baro_figure"][0])
 
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
                                self.output_parameters["hs_fluxes_figure"][0])#,[30,60])
-        display_Ca(self.data,self.output_parameters["Ca"][0])#,[75,120])
+#        display_Ca(self.data,self.output_parameters["Ca"][0])#,[75,120])
 
         #Growth
         if self.growth_activation:
