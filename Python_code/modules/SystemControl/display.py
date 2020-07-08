@@ -38,8 +38,6 @@ def display_baro_results (data_structure, output_file_string="",dpi=300):
         ax4.set_xlabel('time (s)', fontsize = 10)
         ax4.set_ylabel('f_cs', fontsize = 10)
 
-
-
     ax3 = f.add_subplot(spec2[2, 0])
     ax3.plot('time','heart_period',data=data_structure)
     #ax3.set_xlabel('time (s)', fontsize = 15)
@@ -78,11 +76,6 @@ def display_baro_results (data_structure, output_file_string="",dpi=300):
     ax8.set_ylabel('$G_{CaL}$ multiplier\n factor', fontsize = 10)
     ax8.tick_params(labelsize = 10)
     ax8.set_xlabel('time (s)', fontsize = 10)
-
-#    ax7=f.add_subplot(spec2[6,0])
-#    ax7.set_xlabel('time (s)', fontsize = 15)
-#    ax7.set_ylabel('$Rv$', fontsize = 15)
-#    ax7.tick_params(labelsize = 15)
 
     if (output_file_string):
         save_figure_to_file(f, output_file_string, dpi)

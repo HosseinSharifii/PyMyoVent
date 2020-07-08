@@ -413,7 +413,7 @@ class single_circulation():
         display_flows(self.data,
                       self.output_parameters["flows_figure"][0])
         display_pv_loop(self.data,
-                        self.output_parameters["pv_figure"][0],[[78.5,79.8],[142.8,143.8]])
+                        self.output_parameters["pv_figure"][0])#,[[78.5,79.8],[142.8,143.8]])
         #display_pv_loop(self.data,
         #                self.output_parameters["pv_figure"][0],[[1.2,2.2],[4.8,5.8]])
 #        display_pres(self.data,

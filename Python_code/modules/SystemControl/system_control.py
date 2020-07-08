@@ -44,6 +44,7 @@ class system_control():
             float(temp["simulation"]["duty_ratio"][0])
             self.dt = float(temp["simulation"]["time_step"][0])
             self.start_index = int(temp["simulation"]["start_index"][0])
+            print(self.start_index)
             memory_in_seconds = int(temp["simulation"]["memory"][0])
             memory = int(memory_in_seconds/self.dt)
             #Activation function
@@ -59,10 +60,10 @@ class system_control():
 
             # afferent pathway (baroreceptor control)
             self.bc = np.zeros(self.start_index)
-            self.bc_max = float(temp["afferent"]["bc_max"][0])
-            self.bc_min =  float(temp["afferent"]["bc_min"][0])
+            self.bc_max = float(temp["afferent"]["br_max"][0])
+            self.bc_min =  float(temp["afferent"]["br_min"][0])
             self.bc_mid = float((self.bc_max+self.bc_min)/2)
-            self.slope = float(temp["afferent"]["slope"][0])
+            self.slope = float(temp["afferent"]["S"][0])
             self.P_n = float(temp["afferent"]["P_n"][0])
 
             #efferent pathway (regulation)

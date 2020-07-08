@@ -10,7 +10,6 @@
     "multi_threading":["..\\temp\\getting_started\\getting_started_multi_thread.png"],
     "circulatory": ["..\\temp\\getting_started\\getting_started_arterial.png"]
   },
-
   "baroreflex": {
     "baro_scheme": ["fixed_heart_rate"],
     "fixed_heart_rate":{
@@ -38,29 +37,19 @@
       },
       "regulation":{
         "heart_period":{
-          "G_T": [0.03],
-          "D_T": [1,"s"],
-          "tau_T": [1,"s"]
+          "G_T": [0.03]
         },
         "k_1":{
-          "G_k1": [-0.03],
-          "D_k1": [1,"s"],
-          "tau_k1": [1,"s"]
+          "G_k1": [-0.03]
         },
         "k_3":{
-          "G_k3": [-0.03],
-          "D_k3": [1,"s"],
-          "tau_k3": [1,"s"]
+          "G_k3": [-0.03]
         },
         "ca_uptake":{
-          "G_up": [-0.02],
-          "D_up": [1,"s"],
-          "tau_up": [1,"s"]
+          "G_up": [-0.02]
         },
         "g_cal":{
-          "G_gcal": [-0.03],
-          "D_gcal": [1,"s"],
-          "tau_G_gcal": [1,"s"]
+          "G_gcal": [-0.03]
         }
       }
     }

@@ -4,7 +4,7 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 
 def display_pv_loop(data_structure, output_file_string="", t_limits=[],
-                    dpi=300):
+                    dpi=200):
     no_of_rows = 1
     no_of_cols = 1
 
@@ -28,11 +28,8 @@ def display_pv_loop(data_structure, output_file_string="", t_limits=[],
                 label ='After applying the blood loss perturbation'
             ax1.plot(x_axis, y_axis,label=label)
     else:
-        ax1.plot('volume_ventricle', 'pressure_ventricle', data=data_structure)
+        ax1.plot('volume_ventricle', 'pressure_ventricle', data=data_structure,label='PV Loop')
     x_bound =ax1.get_xbound()
-    print(x_bound)
-    min_x_bound = 0.9*x_bound[0]
-    max_x_bound = 1.1*x_bound[1]
     ax1.set_xlim(0.9*x_bound[0],1.1*x_bound[1])
     #ax1.set_xlim([0, 1.1*np.max(data_structure['volume_ventricle'])])
     ax1.set_xlabel('Volume (liters)',fontsize=7)

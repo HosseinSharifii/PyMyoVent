@@ -168,17 +168,17 @@ def dump_data_to_dict (data,key,value):
 def display_multithreading(data,output_file_string="",t_limits=[],
                             dpi=300):
 
-    num_of_rows = 1
+    num_of_rows = 5
     num_of_cols = 1
 
-    plot_width = 5
-    plot_height = 2 * num_of_rows
+    plot_width = 7
+    plot_height = 1.75 * num_of_rows
     f = plt.figure(constrained_layout=True)
 
     f.set_size_inches([plot_width,plot_height])
     spec = gridspec.GridSpec(nrows=num_of_rows, ncols=num_of_cols,figure=f)
 
-    ax0 = f.add_subplot(spec[0,0])
+    """ax0 = f.add_subplot(spec[0,0])
     ax0.plot('time','baroreceptor_output_%25G',data=data,label='$0.25S$')
     ax0.plot('time','baroreceptor_output_%50G',data=data,label='$0.50S$')
     ax0.plot('time','baroreceptor_output',data=data,label='$S$')
@@ -187,9 +187,9 @@ def display_multithreading(data,output_file_string="",t_limits=[],
     ax0.set_ylabel('$br$ (baroreceptor output)',fontsize=7)
     ax0.legend(bbox_to_anchor=(1.05, 1),fontsize = 7)
     ax0.tick_params(labelsize=7)
-    ax0.set_xlabel('time (s)',fontsize=7)
+    ax0.set_xlabel('time (s)',fontsize=7)"""
 
-    """ax0 = f.add_subplot(spec[0,0])
+    ax0 = f.add_subplot(spec[0,0])
     ax0.plot('time','heart_rate_%25G',data=data,label='$0.25G_T$')
     ax0.plot('time','heart_rate_%50G',data=data,label='$0.50G_T$')
     ax0.plot('time','heart_rate',data=data,label='$G_T$')
@@ -205,7 +205,7 @@ def display_multithreading(data,output_file_string="",t_limits=[],
     ax1.plot('time','k_1',data=data,label='$G_{k_1}$')
     ax1.plot('time','k_1_%150G',data=data,label='$1.50G_{k_1}$')
     ax1.plot('time','k_1_%175G',data=data,label='$1.75G_{k_1}$')
-    ax1.set_ylabel('k_1',fontsize=10)
+    ax1.set_ylabel('$k_1$',fontsize=10)
     ax1.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
     ax1.tick_params(labelsize=10)
 
@@ -215,7 +215,7 @@ def display_multithreading(data,output_file_string="",t_limits=[],
     ax2.plot('time','k_3',data=data,label='$G_{k_3}$')
     ax2.plot('time','k_3_%150G',data=data,label='$1.50G_{k_3}$')
     ax2.plot('time','k_3_%175G',data=data,label='$1.75G_{k_3}$')
-    ax2.set_ylabel('k_3',fontsize=10)
+    ax2.set_ylabel('$k_3$',fontsize=10)
     ax2.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
     ax2.tick_params(labelsize=10)
 
@@ -239,7 +239,7 @@ def display_multithreading(data,output_file_string="",t_limits=[],
     ax4.set_ylabel('$G_{CaL}$',fontsize=10)
     ax4.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
     ax4.tick_params(labelsize=10)
-    ax4.set_xlabel('time (s)')"""
+    ax4.set_xlabel('time (s)')
 
     """ax0 = f.add_subplot(spec[0,0])
     ax0.plot('time','ventricle_wall_thickness',data=data,label='G')

@@ -25,7 +25,7 @@ class half_sarcomere():
         self.ATPase_activation = hs_params["ATPase_activation"][0]
         self.delta_G = float(hs_params["delta_energy"][0])
         self.N_A = float(hs_params["avagadro_number"][0])
-        self.L0 = float(hs_params["referench_hs_length"][0])
+        self.L0 = float(hs_params["reference_hs_length"][0])
 
         # Pull of membrane parameters
         membr_params = hs_params["membranes"]
