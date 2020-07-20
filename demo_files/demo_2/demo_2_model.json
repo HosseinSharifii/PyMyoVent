@@ -1,6 +1,7 @@
 {
   "output_parameters": {
     "excel_file": ["..\\temp\\demo_2\\demo_2.xlsx"],
+    "csv_file": ["..\\temp\\demo_2\\demo_2.csv"],
     "input_file": ["..\\temp\\demo_2\\demo_2.json"],
     "summary_figure": ["..\\temp\\demo_2\\demo_2_summary.png"],
     "force_length": ["..\\temp\\demo_2\\demo_2_F_L.png"],
@@ -37,7 +38,7 @@
       "simulation":{
         "start_index":[2000],
         "memory":[2,"s"],
-        "no_of_time_points": [15000],
+        "no_of_time_points": [80000],
         "time_step": [0.001],
         "duty_ratio": [0.003],
         "basal_heart_period": [1,"s"]
@@ -46,7 +47,7 @@
         "br_max": [2],
         "br_min": [0],
         "S": [15,"mmHg"],
-        "P_n": [90,"mmHg"]
+        "P_n": [65,"mmHg"]
       },
       "regulation":{
         "heart_period":{
@@ -72,7 +73,7 @@
     "volume":{
       "start_index": [80000],
       "stop_index": [85000],
-      "increment": [-4e-4]
+      "increment": [0]
     },
     "valve":{
       "aortic":{
@@ -105,9 +106,9 @@
     },
     "resistance": {
       "aorta":{
-        "start_index": [400000],
-        "stop_index": [410000],
-        "increment": [0.0]
+        "start_index": [80000],
+        "stop_index": [85000],
+        "increment": [0]
       },
       "capillaries": {
         "start_index": [500000],
@@ -115,9 +116,9 @@
         "increment": [0]
       },
       "venous":{
-        "start_index": [85000],
-        "stop_index": [90000],
-        "increment": [0]
+        "start_index": [80000],
+        "stop_index": [85000],
+        "increment": [0.0]
       },
       "ventricle":{
         "start_index": [500000],
@@ -266,12 +267,12 @@
     "profiling_activation":[false]
   },
   "saving_to_spreadsheet":{
-    "saving_data_activation":[false],
+    "saving_data_activation":[true],
     "start_index":[0],
-    "stop_index":[1000]
+    "stop_index":[80000]
   },
   "multi_threads" :{
-    "multithreading_activation":[true],
+    "multithreading_activation":[false],
     "parameters_in":{
       "G_T": {
         "values":[25,50,100,150,175],

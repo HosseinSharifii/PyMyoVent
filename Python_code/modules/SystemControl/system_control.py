@@ -2,18 +2,18 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 
-
 class system_control():
     """Class for baro_params"""
 
     from .implement import update_baroreceptor,return_heart_period,return_contractility
     from .implement import return_activation, update_data_holder, return_venous_resistance
     from .display import display_baro_results, display_arterial_pressure
-
-    def __init__(self,baro_params,hs_params,circ_params,data_buffer_size):#,growth_activation): #baro_params
+    from modules.SingleVentricle import SingleVentricle as sv
+    def __init__(self,baro_params,hs_params,hs_class,circ_params,data_buffer_size):#,growth_activation): #baro_params
         """input constant parameters"""
         #baro_params = baro_params
         self.baro_scheme = baro_params["baro_scheme"][0]
+        self.hs = hs_class
 
         if (self.baro_scheme == "fixed_heart_rate"):
 
@@ -94,76 +94,6 @@ class system_control():
             self.G_gcal = float(temp["regulation"]["g_cal"]["G_gcal"][0])
             self.g_cal_rate_array = np.zeros(memory)
 
-        if (self.baro_scheme == "Ursino_1998"):
-
-            #Activation function
-            self.T0 = self.T
-            self.T_prime = self.T
-            self.T_systole = float(baro_params["simulation"]["duration_of_systole"][0])
-            self.T_diastole = self.T-self.T_systole
-            self.counter_diastole = int(self.T_diastole/self.dt)
-            self.counter_systole = int(self.T_systole/self.dt)
-            self.baroreceptor_counter = self.counter_diastole
-            self.T_counter = self.counter_diastole
-            self.cardiac_cycle_counter = 0
-            self.activation_level = 0.0
-
-            #Afferent pathway
-            self.tau_p = float(baro_params["afferent"]["tau_p"][0])
-            self.tau_z = float(baro_params["afferent"]["tau_z"][0])
-            self.f_min = float(baro_params["afferent"]["f_min"][0])
-            self.f_max = float(baro_params["afferent"]["f_max"][0])
-            self.P_n = float(baro_params["afferent"]["P_n"][0])
-            self.k_a = float(baro_params["afferent"]["k_a"][0])
-            self.P_tilda = [0.0]
-
-            #Effernet sympathetic pathway
-            self.f_es_inf = float(baro_params["efferent_sym"]["f_es_inf"][0])
-            self.f_es_0 = float(baro_params["efferent_sym"]["f_es_0"][0])
-            self.k_es = float(baro_params["efferent_sym"]["k_es"][0])
-            self.f_es = np.array([])
-
-            #Efferent parasympathetic (vagal) pathway
-            self.f_ev_inf = float(baro_params["efferent_vagal"]["f_ev_inf"][0])
-            self.f_ev_0 = float(baro_params["efferent_vagal"]["f_ev_0"][0])
-            self.k_ev = float(baro_params["efferent_vagal"]["k_ev"][0])
-            self.f_cs_0 = float(baro_params["efferent_vagal"]["f_cs_0"][0])
-            self.f_ev = np.array([])
-
-            #Regulation effector for heart period and contractility
-            #Sympathetic activity
-                #heart period
-            self.G_Ts = float(baro_params["regulation_sym"]["heart_period"]["G_Ts"][0])
-            D_Ts_in_second = float(baro_params["regulation_sym"]["heart_period"]["D_Ts"][0])
-            self.D_Ts = int(D_Ts_in_second / self.dt)
-            self.tau_Ts = float(baro_params["regulation_sym"]["heart_period"]["tau_Ts"][0])
-            self.delta_Ts = 0.0
-                #contractility
-                    #k_1
-            self.k1 = float(baro_params["regulation_sym"]["k_1"]["k1"][0])
-            self.k1_0 = self.k1
-            self.G_k1 = float(baro_params["regulation_sym"]["k_1"]["G_k1"][0])
-            D_k1_in_second = float(baro_params["regulation_sym"]["k_1"]["D_k1"][0])
-            self.D_k1 = int(D_k1_in_second/self.dt)
-            self.tau_k1 = float(baro_params["regulation_sym"]["k_1"]["tau_k1"][0])
-            self.delta_k1 =0
-
-                    #k_3
-            self.k3 = float(baro_params["regulation_sym"]["k_3"]["k3"][0])
-            self.k3_0 = self.k3
-            self.G_k3 = float(baro_params["regulation_sym"]["k_3"]["G_k3"][0])
-            D_k3_in_second = float(baro_params["regulation_sym"]["k_3"]["D_k3"][0])
-            self.D_k3 = int(D_k3_in_second/self.dt)
-            self.tau_k3 = float(baro_params["regulation_sym"]["k_3"]["tau_k3"][0])
-            self.delta_k3 = 0
-
-            #Parasympathetic (vagal) activity
-                #heart period
-            self.G_Tv = float(baro_params["regulation_vagal"]["G_Tv"][0])
-            D_Tv_in_second = float(baro_params["regulation_vagal"]["D_Tv"][0])
-            self.D_Tv = int(D_Tv_in_second / self.dt)
-            self.tau_Tv = float(baro_params["regulation_vagal"]["tau_Tv"][0])
-            self.delta_Tv = 0.0
 
             # data
         self.data_buffer_size = data_buffer_size
@@ -181,8 +111,9 @@ class system_control():
             self.sys_data['k_1'] = pd.Series(np.full(self.data_buffer_size,self.k1))
             self.sys_data['k_3'] = pd.Series(np.full(self.data_buffer_size,self.k3))
             self.sys_data['Ca_Vmax_up_factor'] = \
-                pd.Series(np.full(self.data_buffer_size,self.ca_uptake))
-            self.sys_data['g_CaL_factor'] = pd.Series(np.full(self.data_buffer_size,self.g_cal))
+                pd.Series(np.full(self.data_buffer_size,self.hs.membr.constants[39]))
+            self.sys_data['g_CaL_factor'] = \
+                pd.Series(np.full(self.data_buffer_size,self.hs.membr.constants[18]))#self.g_cal))
 
 
             """self.sys_data.at[0, 'k_1'] = self.k1
@@ -197,10 +128,3 @@ class system_control():
             # initial values
             self.sys_data.at[0, 'baroreceptor_output'] = 0
     #        self.sys_data.at[0, 'venous_resistance'] = self.Rv
-        if self.baro_scheme == "Ursino_1998":
-
-            self.sys_data['P_tilda'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.sys_data['f_cs'] = pd.Series(np.zeros(self.data_buffer_size))
-            # initial values
-            self.sys_data.at[0, 'P_tilda'] = 0
-            self.sys_data.at[0, 'f_cs'] = 0

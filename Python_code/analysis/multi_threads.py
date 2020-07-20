@@ -226,7 +226,7 @@ def display_multithreading(data,output_file_string="",t_limits=[],
     ax3.plot('time','Ca_Vmax_up_factor',data=data,label='$G_{V_{max,up}}$')
     ax3.plot('time','Ca_Vmax_up_factor_%150G',data=data,label='$1.50G_{V_{max,up}}$')
     ax3.plot('time','Ca_Vmax_up_factor_%175G',data=data,label='$1.75G_{V_{max,up}}$')
-    ax3.set_ylabel('$V_{max,up}$',fontsize=10)
+    ax3.set_ylabel('$V_{max,up}$\n multiplier factor',fontsize=10)
     ax3.legend(bbox_to_anchor=(1.05, 1),fontsize = 10)
     ax3.tick_params(labelsize=10)
 
