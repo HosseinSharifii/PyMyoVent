@@ -6,7 +6,6 @@ class growth():
     from .implement import return_lv_wall_thickness
     from .implement import return_number_of_hs,update_data_holder
     from .implement import update_growth
-    from .lowpass_filter import lowpass_filter
     from .setpoint import growth_driver
     from .display import display_growth, display_growth_summary, display_ventricular_dimensions
     from .display import display_systolic_function, display_ATPase
@@ -33,7 +32,8 @@ class growth():
 
         self.wall_volume = ventricle_wall_volume
         self.wv_array = np.full(self.start_index,self.wall_volume)
-        self.wv_rate = np.zeros(self.start_index)
+        #self.wv_rate = np.zeros(self.start_index)
+        self.wv_rate = np.zeros(self.ma_window)
 
         #Eccentric growth (number of hs in sereis)
         self.n_of_hs = initial_numbers_of_hs
@@ -57,7 +57,7 @@ class growth():
         self.gr_data = pd.DataFrame({
 #                                    'ventricle_wall_thickness':
 #                                            np.full(self.data_buffer_size,1000*self.tw),
-                                    'wall_volume':
+                                    'ventricle_wall_volume':
                                             np.full(self.data_buffer_size,self.wall_volume),
                                     'number_of_hs':
                                             np.full(self.data_buffer_size,self.n_of_hs)})
