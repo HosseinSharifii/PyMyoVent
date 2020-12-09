@@ -16,6 +16,7 @@ class system_control():
         self.sys_params = sys_params
         self.hs = hs_class
 
+
         # simulation params
         sim_temp = sys_params["simulation"]
 
