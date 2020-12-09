@@ -1,0 +1,13 @@
+{
+  "input_path":{
+    "demo_0": ["..\\demo_files\\growth_normal_Gc1e-7_Ge1e-7\\growth_normal_Gc1e-7_Ge1e-7_model.json"],
+    "demo_1": ["..\\demo_files\\growth_normal_Gc1e-7_Ge3e-7\\growth_normal_Gc1e-7_Ge3e-7_model.json"],
+    "demo_2": ["..\\demo_files\\growth_normal_Gc1e-7_Ge5e-7\\growth_normal_Gc1e-7_Ge5e-7_model.json"],
+    "demo_3": ["..\\demo_files\\growth_normal_Gc1e-7_Ge7e-7\\growth_normal_Gc1e-7_Ge7e-7_model.json"],
+    "demo_4": ["..\\demo_files\\growth_normal_Gc1e-7_Ge9e-7\\growth_normal_Gc1e-7_Ge9e-7_model.json"],
+    "demo_5": ["..\\demo_files\\growth_normal_Gc3e-7_Ge1e-7\\growth_normal_Gc3e-7_Ge1e-7_model.json"],
+    "demo_6": ["..\\demo_files\\growth_normal_Gc5e-7_Ge1e-7\\growth_normal_Gc5e-7_Ge1e-7_model.json"],
+    "demo_7": ["..\\demo_files\\growth_normal_Gc7e-7_Ge1e-7\\growth_normal_Gc7e-7_Ge1e-7_model.json"],
+    "demo_8": ["..\\demo_files\\growth_normal_Gc9e-7_Ge1e-7\\growth_normal_Gc9e-7_Ge1e-7_model.json"]
+  }
+}

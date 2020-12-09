@@ -5,7 +5,6 @@ import pandas as pd
 import cProfile
 import timeit
 from openpyxl import Workbook
-from lxml import etree
 from scipy import signal
 from scipy.integrate import solve_ivp
 from scipy.constants import mmHg as mmHg_in_pascals
@@ -25,21 +24,19 @@ class single_circulation():
 
         from .implement import return_lv_circumference,return_lv_pressure, return_ATPase
         # Pull off stuff
-#        self.input_xml_file_string = xml_file_string
-        self.multithreading_activation = \
-            single_circulation_simulation["multi_threads"]["multithreading_activation"][0]
+
+        #self.multithreading_activation = \
+        #    single_circulation_simulation["multi_threads"]["multithreading_activation"][0]
 
         self.output_parameters = \
             single_circulation_simulation["output_parameters"]
 
-        self.baro_params = single_circulation_simulation["baroreflex"]
-        self.baro_scheme = self.baro_params["baro_scheme"][0]
 
-        self.output_buffer_size = \
-            int(self.baro_params[self.baro_scheme]["simulation"]["no_of_time_points"][0])
-        self.dt= float(self.baro_params[self.baro_scheme]["simulation"]["time_step"][0])
-        self.T=\
-            float(self.baro_params[self.baro_scheme]["simulation"]["basal_heart_period"][0])
+        self.sys_params = single_circulation_simulation["system_control"]
+
+        self.output_buffer_size = int(self.sys_params["simulation"]["no_of_time_points"][0])
+        self.dt= float(self.sys_params["simulation"]["time_step"][0])
+        self.T= float(self.sys_params["simulation"]["basal_heart_period"][0])
 
         # Initialize circulation object using data from the sim_object
         circ_params = single_circulation_simulation["circulation"]
@@ -93,10 +90,10 @@ class single_circulation():
                                     0])
 
         # Look for perturbations
-        self.pert_activation = \
-        single_circulation_simulation["perturbations"]["perturbation_activation"][0]
-        if self.pert_activation:
+        self.pert_activation = False
+        if "perturbations" in single_circulation_simulation:
 
+            self.pert_activation = True
             pert_params = single_circulation_simulation['perturbations']
             self.pert = pert.perturbation(pert_params,self.output_buffer_size)
             self.volume_perturbation = self.pert.volume_perturbation
@@ -161,16 +158,26 @@ class single_circulation():
         internal_area = 2.0 * np.pi * np.power(internal_r, 2.0)
         self.wall_thickness = 0.001 * self.ventricle_wall_volume /internal_area
 
+        # Baro
+
+        self.syscon=syscon.system_control(self.sys_params,hs_params,self.hs,
+                        circ_params,self.output_buffer_size)
+        self.baro_activation_array = np.full(self.output_buffer_size+1,False)
+        if "baroreceptor" in self.sys_params:
+            self.membrane_kinetic_scheme = hs_params['membranes']['kinetic_scheme'][0]
+            start_index = int(self.sys_params["baroreceptor"]["start_index"][0])
+            self.baro_activation_array[start_index:]=True
+        self.baro_activation = self.baro_activation_array[0]
 
         # Look for growth module
         self.growth_activation_array = np.full(self.output_buffer_size+1,False)
         self.growth_activation = self.growth_activation_array[0]
-        growth_params = single_circulation_simulation["growth"]
 
-        if growth_params["growth_activation"][0]:
+        if "growth" in single_circulation_simulation:
 
             from modules.Growth import growth as gr
 
+            growth_params = single_circulation_simulation["growth"]
             start_index = int(growth_params["start_index"][0])
 
             self.driven_signal = growth_params["driven_signal"][0]
@@ -180,22 +187,13 @@ class single_circulation():
 
             initial_numbers_of_hs = self.n_hs
             self.gr = \
-            gr.growth(growth_params,initial_numbers_of_hs,self.hs,circ_params,
+            gr.growth(growth_params,initial_numbers_of_hs,self.hs,self.syscon,circ_params,
                             self.output_buffer_size)
 
             self.growth_activation_array[start_index:] = True
             self.growth_activation = self.growth_activation_array[0]
-            #self.growth_switch = True
 
-        # Baro
-        self.syscon=syscon.system_control(self.baro_params,hs_params,self.hs,
-                        circ_params,self.output_buffer_size)
-        self.baro_activation_array = np.full(self.output_buffer_size+1,False)
-        if self.baro_scheme == "simple_baroreceptor":
-            start_index = \
-                int(self.baro_params[self.baro_scheme]["simulation"]["start_index"][0])
-            self.baro_activation_array[start_index:]=True
-        self.baro_activation = self.baro_activation_array[0]
+
 
         print("hsl: %f" % self.hs.hs_length)
         print("slack hsl: %f" % self.slack_hsl)
@@ -286,7 +284,30 @@ class single_circulation():
                                     'ventricle_wall_mass':
                                     np.full(self.output_buffer_size,self.lv_mass),
                                     'ventricle_wall_mass_i':
-                                    np.full(self.output_buffer_size,self.lv_mass_indexed)})
+                                    np.full(self.output_buffer_size,self.lv_mass_indexed),
+                                    'aorta_resistance':
+                                    np.full(self.output_buffer_size,self.aorta_resistance),
+                                    'arteries_resistance':
+                                    np.full(self.output_buffer_size,self.arteries_resistance),
+                                    'arterioles_resistance':
+                                    np.full(self.output_buffer_size,self.arterioles_resistance),
+                                    'capillaries_resistance':
+                                    np.full(self.output_buffer_size,self.capillaries_resistance),
+                                    'veins_resistance':
+                                    np.full(self.output_buffer_size,self.veins_resistance),
+                                    'ventricle_resistance':
+                                    np.full(self.output_buffer_size,self.ventricle_resistance),
+                                    'aorta_compliance':
+                                    np.full(self.output_buffer_size,self.aorta_compliance),
+                                    'arteries_compliance':
+                                    np.full(self.output_buffer_size,self.arteries_compliance),
+                                    'arterioles_compliance':
+                                    np.full(self.output_buffer_size,self.arterioles_compliance),
+                                    'capillaries_compliance':
+                                    np.full(self.output_buffer_size,self.capillaries_compliance),
+                                    'veins_compliance':
+                                    np.full(self.output_buffer_size,self.veins_compliance)})
+
 
         # Store the first values
         self.data.at[0, 'pressure_aorta'] = self.p[0]
@@ -317,14 +338,14 @@ class single_circulation():
         # Run the simulation
         from .implement import implement_time_step, update_data_holders,analyze_data
         from .display import display_simulation, display_flows, display_pv_loop,display_N_overlap
-        from .display import display_Ca,display_pres,display_simulation_publish,display_active_force,display_r4
+        from .display import display_Ca,display_pres,display_simulation_publish,display_active_force,display_activation_pulse
 
         # Set up some values for the simulation
         no_of_time_points = \
-            int(self.baro_params[self.baro_scheme]["simulation"]["no_of_time_points"][0])
+            int(self.sys_params["simulation"]["no_of_time_points"][0])
 
         activation_duty_ratio = \
-            float(self.baro_params[self.baro_scheme]["simulation"]["duty_ratio"][0])
+            float(self.sys_params["simulation"]["duty_ratio"][0])
 
         t = self.dt*np.arange(1, no_of_time_points+1)
 
@@ -395,8 +416,8 @@ class single_circulation():
             self.data =pd.concat([self.data,self.gr.gr_data],axis=1)
 
         # Get output for multithreading
-        if self.multithreading_activation:
-            return self.data
+        #if self.multithreading_activation:
+        #    return self.data
 
 
 
@@ -406,35 +427,27 @@ class single_circulation():
             pr.print_stats()
         # Make plots
         # Circulation
-        #display_simulation(self.data,
-        #                   self.output_parameters["summary_figure"][0])#,[75,120])#,[81.6,82.6])
+        display_simulation(self.data,
+                           self.output_parameters["summary_figure"][0],dpi=300)#,[75,120])#,[81.6,82.6])
 
-        display_simulation_publish(self.data,
-                           self.output_parameters["summary_figure"][0])
-        #display_N_overlap(self.data,self.output_parameters["N_overlap"][0] )
-        #display_r4(self.hs.myof.x,self.hs.myof.r4,self.output_parameters["r4"][0])
-#        display_active_force(self.data,
-#                            self.output_parameters["active"][0])#,[75,120])
         display_flows(self.data,
-                      self.output_parameters["flows_figure"][0])
+                      self.output_parameters["flows_figure"][0],dpi=300)
         display_pv_loop(self.data,
-                        self.output_parameters["pv_figure"][0])#,[[78.5,79.8],[142.8,143.8]]
-        #display_pv_loop(self.data,
-        #                self.output_parameters["pv_figure"][0],[[1.2,2.2],[4.8,5.8]])
-#        display_pres(self.data,
-#                    self.output_parameters["pres"][0],[38.4,39.4])
-        #syscon.system_control.display_arterial_pressure(self.data,
-        #                self.output_parameters["circulatory"][0])
+                        self.output_parameters["pv_figure"][0],dpi=300)#,[[78.5,79.8],[142.8,143.8]]
 
-        #if self.baro_scheme !="fixed_heart_rate":
         if self.baro_activation:
-            syscon.system_control.display_baro_results(self.data,
-                            self.output_parameters["baro_figure"][0])
+            if self.membrane_kinetic_scheme == 'Ten_Tusscher_2004':
+                syscon.system_control.display_baro_results_tt(self.data,
+                                self.output_parameters["baro_figure"][0],dpi=300)
+            elif self.membrane_kinetic_scheme == 'simple_2_compartment':
+                syscon.system_control.display_baro_results(self.data,
+                                self.output_parameters["baro_figure"][0],dpi=300)
+            syscon.system_control.display_arterial_pressure(self.data,
+                            self.output_parameters["circulatory"][0],dpi=300)
 
         # Half-sarcomere
         hs.half_sarcomere.display_fluxes(self.data,
-                               self.output_parameters["hs_fluxes_figure"][0])#,[30,60])
-#        display_Ca(self.data,self.output_parameters["Ca"][0])#,[75,120])
+                               self.output_parameters["hs_fluxes_figure"][0],dpi=300)#,[30,60])
 
         #Growth
         if self.growth_activation:

@@ -34,9 +34,24 @@ def return_fluxes(self, y, Ca_conc):
         r3[r3 > self.parent_hs.max_rate] = self.parent_hs.max_rate
         J3 = r3 * self.bin_width * M_ON * (n_on - n_bound)
 
-        r4 = self.k_4_0 + (self.k_4_1 * np.power(self.x, 4))
-        r4[r4 > self.parent_hs.max_rate] = self.parent_hs.max_rate
-        J4 = r4 * M_bound
+        # imply other detachment mode if existed
+        if self.detatch_mode_activation == True and self.detachment_mode == "exponential":
+
+            r4 = self.k_4_0 * \
+                np.exp(-self.k_cb * self.x * self.exp_delta /
+                        (2.0 * 1e18 * scipy_constants.Boltzmann * self.parent_hs.temperature))
+            r4[r4 > self.parent_hs.max_rate] = self.parent_hs.max_rate
+            J4 = r4 * M_bound
+            # determine what indicies are for |x| > 8 nm
+            indicies = np.where(np.abs(self.x)>8)
+        #    J4[indicies] = J4[indicies] + (np.abs(self.x[indicies])- 8)*self.parent_hs.max_rate
+
+        else:
+            r4 = self.k_4_0 + (self.k_4_1 * np.power(self.x, 4))
+            r4[r4 > self.parent_hs.max_rate] = self.parent_hs.max_rate
+            J4 = r4 * M_bound
+        #print(np.sum(J4))
+
         if (self.n_overlap > 0.0):
             Jon = (self.k_on * Ca_conc * (self.n_overlap - n_on) *
                 (1.0 + self.k_coop * (n_on / self.n_overlap)))

@@ -17,16 +17,26 @@ def implement_time_step(self, time_step, activation,i):
     if self.growth_activation:
             #Calculating null stress for growth module
         if self.growth_activation_array[i-1]==False:
-            self.gr.growth_driver()
-        self.gr.update_growth(time_step)
+            #self.gr.growth_driver()
+            self.gr.cb_force_null = self.syscon.mean_active_force
+            self.gr.pas_force_null = self.syscon.mean_passive_force
+            print('***')
+            print('Growth module is activated!')
+            print('with passive force_null of ',self.gr.pas_force_null)
+            print('and active force_null of',self.gr.cb_force_null)
+            print('***')
 
-        #self.wall_thickness = self.gr.wall_thickness
-        self.ventricle_wall_volume = self.gr.wall_volume
+#        self.gr.update_growth(time_step,self.ventricle_wall_volume,self.n_hs)
+        self.ventricle_wall_volume = self.gr.return_lv_wall_volume(time_step,self.hs.myof.cb_force)
+        self.n_hs = self.gr.return_number_of_hs(time_step,self.hs.myof.pas_force)
+#        self.wall_thickness = self.gr.wall_thickness
+#        self.ventricle_wall_volume = return_wall_volume(self,self.v[-1])
+#        self.ventricle_wall_volume = self.gr.wall_volume
 #        print(self.ventricle_wall_volume)
-        self.n_hs = self.gr.number_of_hs
+#        self.n_hs = self.gr.number_of_hs
 
     if self.growth_activation_array[-1]:
-        #self.ventricle_wall_volume = return_wall_volume(self, self.v[-1])
+#        self.ventricle_wall_volume = return_wall_volume(self, self.v[-1])
         self.lv_mass , self.lv_mass_indexed = \
         return_lv_mass(self,self.ventricle_wall_volume)
     new_hs_length = 10e9*new_lv_circumference / self.n_hs
@@ -52,24 +62,37 @@ def implement_time_step(self, time_step, activation,i):
     #if self.mitral_valve_perturbation[-1] != 0 or self.aortic_valve_perturbation[-1] != 0:
     if self.pert_activation:
         self.vl=return_regurgitation_volume(self,time_step,self.v)
+
     "New section added by HS"
-    if self.baro_activation:
-        # Update the heart period
+
+    if self.baro_activation_array[-1]:
+
         arterial_pressure=self.p[1]
-        #dv=derivs(self,self.v)
-        flows=return_flows(self,self.v)
-        arterial_pressure_rate=\
-        (flows['aorta_to_arteries'] - flows['arteries_to_arterioles'])/self.compliance[1]
 
-        self.syscon.update_baroreceptor(time_step,arterial_pressure, arterial_pressure_rate)
+        self.syscon.update_MAP(arterial_pressure)
+        self.syscon.update_mean_active_force(self.hs.myof.cb_force)
+        self.syscon.update_mean_passive_force(self.hs.myof.pas_force)
+        self.syscon.update_baroreceptor(time_step,arterial_pressure)
+        if self.baro_activation:
+            # Update the heart period
 
-        self.syscon.return_heart_period(time_step,i)
+            self.syscon.return_heart_period(time_step,arterial_pressure)
 
+            self.hs.myof.k_1,self.hs.myof.k_on = \
+            self.syscon.return_contractility(self.hs.myof.k_1,self.hs.myof.k_on,time_step)
+            if self.membrane_kinetic_scheme == 'Ten_Tusscher_2004':
 
-        self.hs.myof.k_1,self.hs.myof.k_on, self.hs.membr.Ca_Vmax_up_factor,self.hs.membr.g_CaL_factor =\
-        self.syscon.return_contractility(time_step,i)
+                self.hs.membr.Ca_Vmax_up_factor,self.hs.membr.g_CaL_factor= \
+                self.syscon.update_ca_tran_tt(self.hs.membr.Ca_Vmax_up_factor,self.hs.membr.g_CaL_factor,time_step)
 
-        #self.resistance[-2] = self.syscon.return_venous_resistance(time_step,i)
+            elif self.membrane_kinetic_scheme == 'simple_2_compartment':
+                self.hs.membr.k_serca, self.hs.membr.k_act, self.hs.membr.k_leak = \
+                    self.syscon.updat_ca_tran_two_compartment(self.hs.membr.k_serca,self.hs.membr.k_act, \
+                    self.hs.membr.k_leak,self.syscon.duty_ratio,time_step)
+
+            self.compliance[-2] = self.syscon.return_venous_compliance(self.compliance[-2],time_step)
+            self.resistance [2] = self.syscon.return_arteriolar_resistance(self.resistance [2],time_step)
+            #self.resistance[-2] = self.syscon.return_venous_resistance(time_step,i)
 
 def update_data_holders(self, time_step, activation):
 
@@ -89,6 +112,19 @@ def update_data_holders(self, time_step, activation):
     self.data.at[self.data_buffer_index, 'volume_capillaries'] = self.v[3]
     self.data.at[self.data_buffer_index, 'volume_veins'] = self.v[4]
     self.data.at[self.data_buffer_index, 'volume_ventricle'] = self.v[-1]
+
+    self.data.at[self.data_buffer_index, 'aorta_resistance'] = self.resistance[0]
+    self.data.at[self.data_buffer_index, 'arteries_resistance'] = self.resistance[1]
+    self.data.at[self.data_buffer_index, 'arterioles_resistance'] = self.resistance[2]
+    self.data.at[self.data_buffer_index, 'capillaries_resistance'] = self.resistance[3]
+    self.data.at[self.data_buffer_index, 'veins_resistance'] = self.resistance[4]
+    self.data.at[self.data_buffer_index, 'ventricle_resistance'] = self.resistance[5]
+
+    self.data.at[self.data_buffer_index, 'aorta_compliance'] = self.compliance[0]
+    self.data.at[self.data_buffer_index, 'arteries_compliance'] = self.compliance[1]
+    self.data.at[self.data_buffer_index, 'arterioles_compliance'] = self.compliance[2]
+    self.data.at[self.data_buffer_index, 'capillaries_compliance'] = self.compliance[3]
+    self.data.at[self.data_buffer_index, 'veins_compliance'] = self.compliance[4]
 
     #self.vl=return_regurgitation_volume(self,self.v)
 
@@ -129,8 +165,8 @@ def update_data_holders(self, time_step, activation):
 
     # Now update data structure for half_sarcomere
     self.hs.update_data_holder(time_step, activation)
-
-    if self.baro_activation:
+    #if self.baro_scheme == "simple_baroreceptor":
+    if self.baro_activation_array[-1]:
         self.syscon.update_data_holder(time_step)
 
     if self.growth_activation:
@@ -242,9 +278,10 @@ def return_lv_pressure(self,lv_volume):
     internal_r = np.power((3.0 * 0.001 * lv_volume) /(2.0 * np.pi), (1.0 / 3.0))
     internal_area = 2.0 * np.pi * np.power(internal_r, 2.0)
     self.wall_thickness = 0.001 * self.ventricle_wall_volume / internal_area
-    #if self.growth_activation_array[-1]==False:
-    #    internal_area = 2.0 * np.pi * np.power(internal_r, 2.0)
-    #    self.wall_thickness = 0.001 * self.ventricle_wall_volume / internal_area
+#    if self.growth_activation_array[-1]==False:
+#        internal_area = 2.0 * np.pi * np.power(internal_r, 2.0)
+#        self.wall_thickness = 0.001 * self.ventricle_wall_volume / internal_area
+
     # Pressure from Laplace law
     P_in_pascals = 2.0 * total_force * self.wall_thickness / internal_r
     P_in_mmHg = P_in_pascals / mmHg_in_pascals

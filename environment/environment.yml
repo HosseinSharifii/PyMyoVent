@@ -1,0 +1,17 @@
+name: PyMyoVent
+channels:
+  - defaults
+dependencies:
+  - matplotlib=3.1.1
+  - numpy=1.16.5
+  - numpy-base
+  - numpydoc=0.9.1
+  - openpyxl=3.0.0
+  - pandas=0.25.1
+  - python=3.7.4
+  - python-dateutil
+  - scikit-image=0.15.0
+  - scipy=1.3.1
+  - pip
+  - pip:
+    - nested_lookup

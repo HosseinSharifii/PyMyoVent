@@ -83,27 +83,6 @@ class half_sarcomere():
             self.hs_data['Joff'] = pd.Series(np.zeros(self.data_buffer_size))
             self.hs_data['N_overlap'] = pd.Series(np.full(self.data_buffer_size,self.myof.n_overlap))
 
-            self.hs_data['r4_N10'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N9'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N8'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N7'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N6'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N5'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N4'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N3'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N2'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_N1'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_0'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P1'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P2'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P3'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P4'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P5'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P6'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P7'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P8'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P9'] = pd.Series(np.zeros(self.data_buffer_size))
-            self.hs_data['r4_P10'] = pd.Series(np.zeros(self.data_buffer_size))
 
             #ATPase
             if self.ATPase_activation:

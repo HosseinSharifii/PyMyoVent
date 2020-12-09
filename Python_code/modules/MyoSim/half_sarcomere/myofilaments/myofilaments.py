@@ -29,7 +29,6 @@ class myofilaments():
         self.x = np.arange(self.bin_min, self.bin_max+self.bin_width,
                            self.bin_width)
         self.no_of_x_bins = np.size(self.x)
-        print(self.x)
 
         self.thick_filament_length = \
             float(myofil_params["thick_filament_length"][0])
@@ -50,6 +49,15 @@ class myofilaments():
             self.k_4_1 = float(myofil_params["k_4_1"][0])
             self.k_cb = float(myofil_params["k_cb"][0])
             self.x_ps = float(myofil_params["x_ps"][0])
+
+            # looking for a different detachment mode
+            self.detatch_mode_activation = False
+            if "detachment_mode" in myofil_params:
+                self.detatch_mode_activation = True
+                self.detachment_mode = myofil_params["detachment_mode"][0]
+
+                if self.detachment_mode == "exponential":
+                    self.exp_delta = float(myofil_params["exp_delta"][0])
 
             self.y_length = self.no_of_x_bins + 4
             self.y = np.zeros(self.y_length)
