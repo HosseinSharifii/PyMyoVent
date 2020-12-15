@@ -1015,4 +1015,12 @@ if __name__ == "__main__":
     #plot_Ca(voi, states)
     #display_states(voi, states)
     display_Ca(voi, states)
+    import os
+
+    cwd=os.getcwd()
+    data = pd.DataFrame({'time':voi,'Ca_transient_tt':states[3]})
+    
+    fname = 'ca_trans_tt_data'
+    filename = cwd + "/"+fname+".csv"
+    data.to_csv(filename)
 #    plot_model(voi, states, algebraic)

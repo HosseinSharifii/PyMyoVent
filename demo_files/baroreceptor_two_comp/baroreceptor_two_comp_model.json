@@ -24,7 +24,7 @@
         "b_max": [2],
         "b_min": [0],
         "S": [0.067,"mmHg"],
-        "P_set": [87.7,"mmHg"]
+        "P_set": [25,"mmHg"]
       },
       "efferent":{
         "heart_period":{
@@ -130,8 +130,8 @@
       "kinetic_scheme": ["simple_2_compartment"],
       "simple_2_compartment":{
         "Ca_content": [1e-3],
-        "k_leak": [1e-3],
-        "k_act": [3.5e-1],
+        "k_leak": [6e-4],
+        "k_act": [3.2e-1],
         "k_serca": [8.0]
       },
       "Ten_Tusscher_2004":{

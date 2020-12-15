@@ -65,13 +65,13 @@ def implement_time_step(self, time_step, activation,i):
 
     "New section added by HS"
 
-    if self.baro_activation_array[-1]:
+    arterial_pressure=self.p[1]
+    self.syscon.update_MAP(arterial_pressure)
+    self.syscon.update_mean_active_force(self.hs.myof.cb_force)
+    self.syscon.update_mean_passive_force(self.hs.myof.pas_force)
 
-        arterial_pressure=self.p[1]
+    if "baroreceptor" in self.sys_params:
 
-        self.syscon.update_MAP(arterial_pressure)
-        self.syscon.update_mean_active_force(self.hs.myof.cb_force)
-        self.syscon.update_mean_passive_force(self.hs.myof.pas_force)
         self.syscon.update_baroreceptor(time_step,arterial_pressure)
         if self.baro_activation:
             # Update the heart period
@@ -166,14 +166,20 @@ def update_data_holders(self, time_step, activation):
     # Now update data structure for half_sarcomere
     self.hs.update_data_holder(time_step, activation)
     #if self.baro_scheme == "simple_baroreceptor":
-    if self.baro_activation_array[-1]:
-        self.syscon.update_data_holder(time_step)
+    self.syscon.update_data_holder(time_step)
+    #if self.baro_activation_array[-1]:
+    #    self.syscon.update_data_holder(time_step)
 
     if self.growth_activation:
         self.gr.update_data_holder(time_step)
 
 
 def evolve_volumes(self,time_step,v):
+
+    """if np.any(v<0):
+        indicies = np.where(v<0)
+        v[indicies] = 0
+        extra_blood = np.sum(v[indicies])"""
 
     def derivs(t, v):
         # returns dv, derivative of volume
@@ -192,6 +198,21 @@ def evolve_volumes(self,time_step,v):
 
     sol = solve_ivp(derivs, [0, time_step], self.v)
     self.v = sol.y[:, -1]
+
+    """if np.any(self.v<0):
+        indicies = np.where(self.v<0)
+        self.v[indicies] = 0"""
+    """if  np.any(self.v < 0):
+        #while np.any(self.v < 0):
+        indicies = np.where(self.v<0)
+        extra_blood = np.sum(self.v[indicies])
+        self.v[indicies] = 0
+        self.v[4] = self.v[4] + extra_blood
+        sol = solve_ivp(derivs, [0, time_step], self.v)
+        self.v = sol.y[:, -1]
+        print('total V =',np.sum(self.v))"""
+
+
     return self.v
 
 def return_flows(self, v):
@@ -201,6 +222,8 @@ def return_flows(self, v):
     p = np.zeros(self.no_of_compartments)
     vi = range(self.no_of_compartments-1)
     for x in vi:
+        if v[x]<0:
+            v[x] = 0
         p[x] = v[x] / self.compliance[x]
 
     p[-1] = return_lv_pressure(self, v[-1])

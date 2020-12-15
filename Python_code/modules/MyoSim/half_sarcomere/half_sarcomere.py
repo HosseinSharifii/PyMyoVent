@@ -57,7 +57,7 @@ class half_sarcomere():
                                      'Ca_conc' : np.zeros(self.data_buffer_size)})
 
         # Add in specific fields for each scheme
-        if (self.myof.kinetic_scheme == '3state_with_SRX'):
+        if (self.myof.kinetic_scheme == '3state_with_SRX' or self.myof.kinetic_scheme == '3state_with_SRX_and_exp_J4' ):
             # Initialise
             self.hs_data['M_OFF'] = pd.Series(np.zeros(self.data_buffer_size))
             self.hs_data['M_ON'] = pd.Series(np.zeros(self.data_buffer_size))

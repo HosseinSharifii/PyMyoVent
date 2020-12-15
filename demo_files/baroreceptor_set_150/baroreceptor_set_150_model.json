@@ -12,7 +12,7 @@
 
   "system_control":{
     "simulation":{
-      "no_of_time_points": [200000],
+      "no_of_time_points": [100000],
       "time_step": [0.001],
       "duty_ratio": [0.003],
       "basal_heart_period": [0.857,"s"]

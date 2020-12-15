@@ -25,6 +25,31 @@ class system_control():
         self.dt = float(sim_temp["time_step"][0])
         self.no_of_time_points = int(sim_temp["no_of_time_points"][0])
 
+        self.T_systole = self.duty_ratio
+        self.counter_systole = int(self.T_systole/self.dt)
+        self.T_diastole = self.T-self.T_systole
+        self.counter_diastole = int(self.T_diastole/self.dt)
+
+        # MAP
+        self.MAP_memory = int(self.T/self.dt)
+        self.pressure_arteries_array = np.zeros(self.MAP_memory)
+        self.MAP_counter = self.counter_diastole
+        self.MAP = 0
+        # Mean sarcomere force
+        # 1) Active force
+        self.mean_active_force_memory = int(self.T/self.dt)
+        self.active_force_array = np.zeros(self.mean_active_force_memory)
+        self.mean_active_force_counter = self.counter_diastole
+        self.mean_active_force = 0
+        # 2) Passive force
+        self.mean_passive_force_memory = int(self.T/self.dt)
+        self.passive_force_array = np.zeros(self.mean_passive_force_memory)
+        self.mean_passive_force_counter = self.counter_diastole
+        self.mean_passive_force = 0
+
+        self.kinetic_scheme = hs_params['membranes']["kinetic_scheme"][0]
+
+
         if "baroreceptor" in sys_params:
 
             # baroreceptor params
@@ -32,30 +57,11 @@ class system_control():
             self.start_index = int(baro_temp["start_index"][0])
             memory = int(baro_temp["N_t"][0])
             #Activation function
-            self.T_systole = self.duty_ratio
-            self.T_diastole = self.T-self.T_systole
-            self.counter_diastole = int(self.T_diastole/self.dt)
-            self.counter_systole = int(self.T_systole/self.dt)
             self.baroreceptor_counter = self.counter_diastole
             self.T_counter = self.counter_diastole
             self.cardiac_cycle_counter = 0
             self.activation_level = 0.0
-            # MAP
-            self.MAP_memory = int(self.T/self.dt)
-            self.pressure_arteries_array = np.zeros(self.MAP_memory)
-            self.MAP_counter = self.T_counter
-            self.MAP = 0
-            # Mean sarcomere force
-            # 1) Active force
-            self.mean_active_force_memory = int(self.T/self.dt)
-            self.active_force_array = np.zeros(self.mean_active_force_memory)
-            self.mean_active_force_counter = self.T_counter
-            self.mean_active_force = 0
-            # 2) Passive force
-            self.mean_passive_force_memory = int(self.T/self.dt)
-            self.passive_force_array = np.zeros(self.mean_passive_force_memory)
-            self.mean_passive_force_counter = self.T_counter
-            self.mean_passive_force = 0
+
 
             # afferent pathway (baroreceptor control)
             self.b_max = float(baro_temp["afferent"]["b_max"][0])
@@ -84,7 +90,7 @@ class system_control():
             self.k_on_rate_array = np.zeros(memory)
 
                  # Ca transient
-            self.kinetic_scheme = hs_params['membranes']["kinetic_scheme"][0]
+
             if self.kinetic_scheme == "Ten_Tusscher_2004":
 
                     #ca_uptake
@@ -159,7 +165,29 @@ class system_control():
                                             'mean_passive_force':
                                             np.zeros(self.data_buffer_size)})
 
-        if "baroreceptor" in sys_params:
+        self.sys_data['k_1'] = pd.Series(np.full(self.data_buffer_size,float(hs_params["myofilaments"]["k_1"][0])))
+        self.sys_data['k_on'] = pd.Series(np.full(self.data_buffer_size,float(hs_params["myofilaments"]["k_on"][0])))
+
+        if self.kinetic_scheme == "Ten_Tusscher_2004":
+            self.sys_data['Ca_Vmax_up_factor'] = \
+                pd.Series(np.full(self.data_buffer_size,self.hs.membr.constants[39]))
+            self.sys_data['g_CaL_factor'] = \
+                pd.Series(np.full(self.data_buffer_size,self.hs.membr.constants[18]))#self.g_cal))
+        elif self.kinetic_scheme == "simple_2_compartment":
+            self.sys_data['k_serca'] = \
+                pd.Series(np.full(self.data_buffer_size,float(hs_params["membranes"]['simple_2_compartment']['k_serca'][0])))
+            self.sys_data['k_act'] = \
+                pd.Series(np.full(self.data_buffer_size,float(hs_params["membranes"]['simple_2_compartment']['k_act'][0])))
+            self.sys_data['k_leak'] = \
+                pd.Series(np.full(self.data_buffer_size,float(hs_params["membranes"]['simple_2_compartment']['k_leak'][0])))
+            self.sys_data['duty_ratio'] = \
+                pd.Series(np.full(self.data_buffer_size,float(baro_temp['efferent']['duty_ratio']['G_dr'][0])))
+
+        self.sys_data['compliance_veins'] = pd.Series(np.full(self.data_buffer_size,float(circ_params["veins"]["compliance"][0])))
+        self.sys_data['resistance_arterioles'] = pd.Series(np.full(self.data_buffer_size,float(circ_params["arterioles"]["resistance"][0])))
+        self.sys_data['baroreceptor_output'] = pd.Series(np.zeros(self.data_buffer_size))
+
+        """if "baroreceptor" in sys_params:
 
             self.sys_data['k_1'] = pd.Series(np.full(self.data_buffer_size,self.k1))
             self.sys_data['k_on'] = pd.Series(np.full(self.data_buffer_size,self.k_on))
@@ -181,4 +209,4 @@ class system_control():
 
             self.sys_data['compliance_veins'] = pd.Series(np.full(self.data_buffer_size,self.c_venous))
             self.sys_data['resistance_arterioles'] = pd.Series(np.full(self.data_buffer_size,self.r_arteriolar))
-            self.sys_data['baroreceptor_output'] = pd.Series(np.zeros(self.data_buffer_size))
+            self.sys_data['baroreceptor_output'] = pd.Series(np.zeros(self.data_buffer_size))"""

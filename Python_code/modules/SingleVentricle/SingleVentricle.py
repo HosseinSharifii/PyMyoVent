@@ -435,7 +435,7 @@ class single_circulation():
         display_pv_loop(self.data,
                         self.output_parameters["pv_figure"][0],dpi=300)#,[[78.5,79.8],[142.8,143.8]]
 
-        if self.baro_activation:
+        if "baroreceptor" in self.sys_params:
             if self.membrane_kinetic_scheme == 'Ten_Tusscher_2004':
                 syscon.system_control.display_baro_results_tt(self.data,
                                 self.output_parameters["baro_figure"][0],dpi=300)
@@ -477,9 +477,10 @@ class single_circulation():
                 print('dumping data to .csv format took %f seconds'%csv_time)
 
             elif self.output_data_format == "excel":
-                start_excel = timeit.default_timer()
-                append_df_to_excel(self.output_parameters['excel_file'][0],data_to_be_saved,
-                            sheet_name='Data',startrow=0)
+                start_excel = timeit.default_timer(self.output_parameters['csv_file'][0])
+                data_to_be_saved.to_excel(self.output_parameters['excel_file'][0])
+                #append_df_to_excel(self.output_parameters['excel_file'][0],data_to_be_saved,
+                            #sheet_name='Data',startrow=0)
                 stop_excel = timeit.default_timer()
                 excel_time = stop_excel-start_excel
                 print('dumping data to .excel format took %f seconds'%excel_time)

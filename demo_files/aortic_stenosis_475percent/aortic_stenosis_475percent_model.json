@@ -1,55 +1,32 @@
 {
   "output_parameters": {
-    "excel_file": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent.xlsx"],
-    "csv_file": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent.csv"],
     "input_file": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent.json"],
+    "csv_file": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent.csv"],
     "summary_figure": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_summary.png"],
-    "force_length": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_F_L.png"],
     "pv_figure": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_pv.png"],
-    "baro_figure": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_baro.png"],
     "flows_figure": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_flows.png"],
     "hs_fluxes_figure": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_hs_fluxes.png"],
-    "growth_figure": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_growth.png"],
-    "growth_summary": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_growth_sum.png"],
-    "sys_fig": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_sys.png"],
-    "regurg_fig": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_regurg.png"],
-    "active": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_active.png"],
-    "ventricular": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_vent.png"],
-    "multi_threading":["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_multi_thread.png"],
-    "ATPase":["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_ATPase.png"],
-    "Ca":["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_Ca.png"],
-    "circulatory": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_arterial.png"],
-    "pres": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_pres.png"],
-    "N_overlap": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_N_over.png"],
-    "activation":["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_pulse.png"]
+    "baro_figure": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_baro.png"],
+    "circulatory": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_circulation.png"]
   },
 
-  "baroreflex": {
-    "baro_scheme": ["simple_baroreceptor"],
-    "fixed_heart_rate":{
-      "simulation":{
-        "no_of_time_points": [50000],
-        "time_step": [0.001],
-        "duty_ratio": [0.003],
-        "basal_heart_period": [0.857,"s"]
-      }
+  "system_control":{
+    "simulation":{
+      "no_of_time_points": [250000],
+      "time_step": [0.001],
+      "duty_ratio": [0.003],
+      "basal_heart_period": [0.857,"s"]
     },
-    "simple_baroreceptor":{
-      "simulation":{
-        "start_index":[50000],
-        "N_t":[5000],
-        "no_of_time_points": [300000],
-        "time_step": [0.001],
-        "duty_ratio": [0.003],
-        "basal_heart_period": [0.857,"s"]
-      },
+    "baroreceptor":{
+      "start_index":[50000],
+      "N_t":[5000],
       "afferent": {
         "b_max": [2],
         "b_min": [0],
         "S": [0.067,"mmHg"],
         "P_set": [87.7,"mmHg"]
       },
-      "regulation":{
+      "efferent":{
         "heart_period":{
           "G_T": [0.07]
         },
@@ -75,38 +52,37 @@
     }
   },
   "perturbations": {
-    "perturbation_activation":[true],
     "volume":{
-      "start_index": [150000],
-      "stop_index": [160000],
+      "start_index": [50000],
+      "stop_index": [60000],
       "increment": [0]
     },
     "valve":{
       "aortic":{
         "start_index": [0],
-        "stop_index": [505000],
+        "stop_index": [0],
         "increment": [0.0]
       },
       "mitral":{
-        "start_index": [500000],
-        "stop_index": [1000000],
+        "start_index": [0],
+        "stop_index": [0],
         "increment": [0.0]
       }
     },
     "compliance": {
       "aorta":{
-        "start_index": [200000],
-        "stop_index": [205000],
+        "start_index": [0],
+        "stop_index": [0],
         "increment": [0]
       },
       "capillaries": {
-        "start_index": [200000],
-        "stop_index": [205000],
+        "start_index": [0],
+        "stop_index": [0],
         "increment": [0]
       },
       "venous":{
-        "start_index": [500000],
-        "stop_index": [505000],
+        "start_index": [0],
+        "stop_index": [0],
         "increment": [0]
       }
     },
@@ -117,53 +93,53 @@
         "increment": [0.019]
       },
       "capillaries": {
-        "start_index": [500000],
-        "stop_index": [505000],
-        "increment": [0]
+        "start_index": [0],
+        "stop_index": [0],
+        "increment": [0.0]
       },
       "venous":{
-        "start_index": [80000],
-        "stop_index": [85000],
+        "start_index": [0],
+        "stop_index": [0],
         "increment": [0.0]
       },
       "ventricle":{
-        "start_index": [500000],
-        "stop_index": [505000],
-        "increment": [0]
+        "start_index": [0],
+        "stop_index": [0],
+        "increment": [0.0]
       }
     },
     "myosim":{
       "k_1":{
-        "start_index": [25000],
-        "stop_index": [25001],
-        "increment": [0]
+        "start_index": [0],
+        "stop_index": [0],
+        "increment": [0.0]
       },
       "k_2":{
-        "start_index": [25000],
-        "stop_index": [35000],
+        "start_index": [0],
+        "stop_index": [0],
         "increment": [0.0]
       },
       "k_4_0":{
-        "start_index": [200000],
-        "stop_index": [210000],
-        "increment": [0]
+        "start_index": [0],
+        "stop_index": [0],
+        "increment": [0.0]
       }
     },
     "ca_handling":{
       "ca_uptake":{
-        "start_index": [40000],
-        "stop_index": [41000],
-        "increment": [0]
+        "start_index": [0],
+        "stop_index": [0],
+        "increment": [0.0]
       },
       "ca_leak":{
-        "start_index": [40000],
-        "stop_index": [41000],
-        "increment": [0]
+        "start_index": [0],
+        "stop_index": [0],
+        "increment": [0.0]
       },
       "g_cal":{
-        "start_index": [40000],
-        "stop_index": [41000],
-        "increment": [0]
+        "start_index": [0],
+        "stop_index": [0],
+        "increment": [0.0]
       }
     }
   },
@@ -255,20 +231,6 @@
     }
   }
 },
-  "growth": {
-    "growth_activation": [false],
-    "start_index": [200000],
-    "moving_average_window": [5000],
-    "driven_signal": ["stress"],
-    "concenrtric":{
-      "G_stress_driven":[5e-6],
-      "G_ATPase_driven":[1]
-    },
-    "eccentric":{
-      "G_number_of_hs":[-5e-6],
-      "G_ATPase_driven":[-2]
-    }
-  },
   "profiling":{
     "profiling_activation":[false]
   },
@@ -276,17 +238,6 @@
     "saving_data_activation":[true],
     "output_data_format":["csv"],
     "start_index":[0],
-    "stop_index":[300000]
-  },
-  "multi_threads" :{
-    "multithreading_activation":[false],
-    "parameters_in":{
-      "S": {
-        "values":[25,50,100,150,200,1000],
-        "param_out":["baroreceptor_output"],
-        "section": ["baroreflex"]
-      }
-    },
-    "output_main_folder": ["..\\temp\\aortic_stenosis_475percent\\aortic_stenosis_475percent_i_j\\aortic_stenosis_475percent_i_j.json"]
+    "stop_index":[250000]
   }
 }

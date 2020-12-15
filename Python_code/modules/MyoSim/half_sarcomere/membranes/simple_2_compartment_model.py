@@ -4,29 +4,7 @@ from scipy import signal
 from scipy.integrate import solve_ivp
 
 from functools import partial
-"""simulation_time = 2
-time_step = 0.001
-Ca_content = 1e-3
-k_leak = 2e-3
-k_act = 5e-2
-k_serca = 10.0
 
-duty_ratio = 0.3
-heart_period = 1
-activation_frequency = float(1/heart_period)
-
-data_buffer_size = int(simulation_time / time_step)
-t = time_step * np.arange(1,data_buffer_size+1)
-
-activation_level =\
-    0.5*(1+signal.square(np.pi+2*np.pi*activation_frequency*t,
-    duty=duty_ratio))
-
-
-data = pd.DataFrame({'time':t,
-                    'Ca_trans': np.full(data_buffer_size,Ca_content)})
-y = np.zeros(2)
-y[1] = Ca_content"""
 def activation(n,heart_period,time_step,duty_ratio):
     import numpy as np
     activation=np.zeros(n)
@@ -62,18 +40,20 @@ def display_Ca(data,dpi=None):
     f.set_size_inches([10, 4])
     spec2 = gridspec.GridSpec(nrows=no_of_rows, ncols=no_of_cols,
                               figure=f)
-
     ax0 = f.add_subplot(spec2[0, 0])
-    ax0.plot('time','Ca_trans',data = data,label='Ca transient')
+    ax0.plot('time','activation',data = data,label='activation')
     ax0.set_xlabel("time (ms)")
-    ax0.set_ylabel('Ca [mM]')
+    ax0.set_ylabel('activation')
     ax0.legend(bbox_to_anchor=(1.05, 1),loc = 'best')
 
     ax1 = f.add_subplot(spec2[1, 0])
-    ax1.plot('time','activation',data = data,label='activation')
+    ax1.plot('time','Ca_trans',data = data,label='Two compartment')
+    ax1.plot('time','Ca_trans_tt',data = data,label='ten Tusscher')
     ax1.set_xlabel("time (ms)")
-    ax1.set_ylabel('activation')
+    ax1.set_ylabel('Ca [mM]')
     ax1.legend(bbox_to_anchor=(1.05, 1),loc = 'best')
+
+
     print("Saving Ca_states figure to")
     save_figure_to_file(f, "Ca_transient", dpi=dpi)
 
@@ -90,23 +70,21 @@ if __name__ == "__main__":
     simulation_time = 2
     time_step = 0.001
     Ca_content = 1e-3
-    k_leak = 1e-3
-    k_act = 3.5e-1
+    k_leak = 6e-4
+    k_act = 3.2e-1
     k_serca = 8.0
 
     duty_ratio = 0.003
-    heart_period = 0.875
+    heart_period = 0.857
     activation_frequency = float(1/heart_period)
 
     data_buffer_size = int(simulation_time / time_step)
     t = time_step * np.arange(1,data_buffer_size+1)
 
-    #activation =\
-    #    0.5*(1+signal.square(np.pi+2*np.pi*activation_frequency*t,
-    #    duty=duty_ratio))
     activation = activation(data_buffer_size,heart_period,time_step,duty_ratio)
     y = np.zeros(2)
     y[1] = Ca_content
+    #y[0] = 2e-6
     data = pd.DataFrame({'time':t,
                         'Ca_trans': np.zeros(data_buffer_size)})
 
@@ -118,5 +96,7 @@ if __name__ == "__main__":
         data.at[i,'time'] = t[i]
         data.at[i,'Ca_trans'] = y[0]*1e3
         data.at[i,'activation'] = activation[i]
+    tt_data = pd.read_csv('ca_trans_tt_data.csv')
+    data['Ca_trans_tt'] = tt_data['Ca_transient_tt']
 
     display_Ca(data,dpi = 300)
